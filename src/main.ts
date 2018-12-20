@@ -1,47 +1,23 @@
 import { AppsManager, MicroApp } from './lib/AppsManager';
-import { ResourceLoader } from './lib/Loader'
-
-const fakeMicroApp1: MicroApp = {
-    name: 'fakeMicroApp1',
-    deps: ['fakeMicroApp2', 'fakeMicroApp3'],
-    initialize: function({ fakeMicroApp2, fakeMicroApp3}) {
-        fakeMicroApp2.say('fakeMicroApp1 rocks');
-        fakeMicroApp3.say('fakeMicroApp1 rocks');
-        return {
-            say: text => {
-                console.log('talking via fakeMicroApp1:', text);
-            },
-        };
-    },
-};
-
-const fakeMicroApp2: MicroApp = {
-    name: 'fakeMicroApp2',
-    deps: ['fakeMicroApp3'],
-    initialize: function({ fakeMicroApp3 }) {
-        fakeMicroApp3.say('fakeMicroApp2 rocks');
-        return {
-            say: text => {
-                console.log('talking via fakeMicroApp2:', text);
-            },
-        };
-    },
-};
-
-const fakeMicroApp3: MicroApp = {
-    name: 'fakeMicroApp3',
+import { ResourceLoader } from './lib/Loader';
+const ConfigProvider: MicroApp = {
+    name: 'Config',
     initialize: function() {
         return {
-            say: text => {
-                console.log('talking via fakeMicroApp3:', text);
-            },
+            registryApi: 'http://localhost:3000',
         };
+    },
+};
+
+const MainApp: MicroApp = {
+    name: 'Main',
+    deps: ['fakeApp1'],
+    initialize: function(fakeApp1) {
+        console.log(fakeApp1.exec('param1', 'param2'));
     },
 };
 
 const manager = new AppsManager();
+manager.register(ConfigProvider);
 manager.register(ResourceLoader);
-
-setTimeout(() => manager.register(fakeMicroApp1), 5000);
-setTimeout(() => manager.register(fakeMicroApp2), 500);
-setTimeout(() => manager.register(fakeMicroApp3), 1000);
+manager.register(MainApp);

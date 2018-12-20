@@ -8,7 +8,7 @@ enum STATUS {
 export interface MicroApp {
     name: string;
     deps?: string[];
-    initialize: (deps: { [key: string]: any }) => void;
+    initialize: (...deps) => void;
 }
 
 export interface MicroAppDef {
@@ -35,6 +35,11 @@ export class AppsManager {
     private microAppsGraph: MicroAppsGraph = {};
     private instanceCache: AnyObj = {};
     private subscriptions: Array<(appList: MicroAppDef[]) => void> = [];
+    private timer;
+
+    constructor() {
+        window['AppsManager'] = this;
+    }
 
     register(microApp: MicroApp) {
         const microAppDef = this.generateMicroAppDef(microApp);
@@ -62,20 +67,20 @@ export class AppsManager {
         this.dispatch();
     }
 
-    subscribe(fn: (appList: MicroAppDef[]) => void){
+    subscribe(fn: (appList: MicroAppDef[]) => void) {
         this.subscriptions.push(fn);
     }
 
     dispatch() {
         const notFoundList = Object.keys(this.microAppsGraph)
             .map(microAppName => this.microAppsGraph[microAppName])
-            .filter(microApp => microApp.status === STATUS.NOTFOUND)
-        if(notFoundList.length === 0) {
+            .filter(microApp => microApp.status === STATUS.NOTFOUND);
+        if (notFoundList.length === 0) {
             return;
         }
         this.subscriptions.forEach(fn => {
             fn.call(null, notFoundList);
-        })
+        });
     }
 
     private generateMicroAppDef(microApp: MicroApp): MicroAppDef {
@@ -89,9 +94,13 @@ export class AppsManager {
     }
 
     private checkDepsRunning(microApp: MicroAppDef): boolean {
-        return microApp.deps.length && microApp.deps
-            .filter(microAppName => this.microAppsGraph[microAppName].status === STATUS.RUNNING)
-            .length === microApp.deps.length;
+        return (
+            !microApp.deps.length ||
+            microApp.deps.length &&
+            microApp.deps.filter(microAppName => {
+                return this.microAppsGraph[microAppName].status === STATUS.RUNNING;
+            }).length === microApp.deps.length
+        );
     }
 
     private generatePlaceholderMicroAppDef(name: string): MicroAppDef {
@@ -150,7 +159,7 @@ export class AppsManager {
             .filter(microAppName => this.microAppsGraph[microAppName].status === STATUS.READY)
             .forEach(microAppName => {
                 const deps = this.provideDepsInstances(this.microAppsGraph[microAppName].deps);
-                this.instanceCache[microAppName] = new this.microAppsGraph[microAppName].app.initialize(deps);
+                this.instanceCache[microAppName] = new this.microAppsGraph[microAppName].app.initialize(...deps);
                 this.microAppsGraph[microAppName].status = STATUS.RUNNING;
                 hasSomethingRun = true;
             });
@@ -174,13 +183,7 @@ export class AppsManager {
         }
     }
 
-    private provideDepsInstances(deps: string[]): AnyObj {
-        return deps.reduce((cum, cur) => {
-            let instance = this.instanceCache[cur];
-            return {
-                ...cum,
-                [cur]: instance || undefined,
-            };
-        }, {AppsManager: this});
+    private provideDepsInstances(deps: string[]): any[] {
+        return [...deps.map(dep => this.instanceCache[dep]), this];
     }
 }
