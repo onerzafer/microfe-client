@@ -1,5 +1,15 @@
 import { AppsManager, MicroApp, MicroAppDef } from './AppsManager';
 
+enum TAG {
+    script = 'script',
+    style = 'style',
+}
+
+enum TAG_TYPE {
+    script = 'text/javascript',
+    style = 'text/stylesheet',
+}
+
 class Loader {
     private loadingList: string[] = [];
     private apiUrl: string;
@@ -18,10 +28,10 @@ class Loader {
         });
     }
 
-    load(microAppName: string, appContent: string) {
-        const script = document.createElement('script');
+    static injectToHead(microAppName: string, appContent: string, tag: 'script' | 'style', type: string) {
+        const script = document.createElement(tag);
         const inlineScript = document.createTextNode(appContent);
-        script.type = 'text/javascript';
+        script.type = type;
         script.id = microAppName;
         script.appendChild(inlineScript);
         document.getElementsByTagName('head')[0].appendChild(script);
@@ -36,10 +46,10 @@ class Loader {
             .then(([fileContent, type]) => {
                 switch (type) {
                     case 'text/css':
-                        // inject to header
+                        Loader.injectToHead(microAppName, fileContent, TAG.style, TAG_TYPE.style);
                         break;
                     case 'application/javascript':
-                        this.load(microAppName, fileContent);
+                        Loader.injectToHead(microAppName, fileContent, TAG.script, TAG_TYPE.script);
                         break;
                 }
             });

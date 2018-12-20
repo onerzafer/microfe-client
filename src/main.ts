@@ -11,9 +11,10 @@ const ConfigProvider: MicroApp = {
 
 const MainApp: MicroApp = {
     name: 'Main',
-    deps: ['fakeApp1'],
-    initialize: function(fakeApp1) {
-        console.log(fakeApp1.exec('param1', 'param2'));
+    deps: ['Layout'],
+    initialize: function(Layout) {
+        const app = document.getElementById('app');
+        Layout.exec(app);
     },
 };
 
