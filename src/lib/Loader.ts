@@ -1,16 +1,8 @@
-import { AppsManager, MicroApp, MicroAppDef } from './AppsManager';
+import { AppsManager } from './AppsManager'
+import { MicroAppDef } from './AppsManager.interface'
+import { TAG, TAG_TYPE } from './tag.enum'
 
-enum TAG {
-    script = 'script',
-    style = 'style',
-}
-
-enum TAG_TYPE {
-    script = 'text/javascript',
-    style = 'text/stylesheet',
-}
-
-class Loader {
+export class Loader {
     private loadingList: string[] = [];
     private apiUrl: string;
 
@@ -19,8 +11,14 @@ class Loader {
         appsManager.subscribe(this.onNotFoundApp.bind(this));
     }
 
-    onNotFoundApp(appList: MicroAppDef[]) {
-        appList.forEach(({ name }) => {
+    onNotFoundApp(appList: {blocking: MicroAppDef[], nonBlocking: MicroAppDef[] }) {
+        appList.blocking.forEach(({ name }) => {
+            if (this.loadingList.indexOf(name) === -1) {
+                this.loadingList.push(name);
+                this.fetchMicroApp(name);
+            }
+        });
+        appList.nonBlocking.forEach(({ name }) => {
             if (this.loadingList.indexOf(name) === -1) {
                 this.loadingList.push(name);
                 this.fetchMicroApp(name);
@@ -28,38 +26,33 @@ class Loader {
         });
     }
 
-    static injectToHead(microAppName: string, appContent: string, tag: 'script' | 'style', type: string) {
-        const script = document.createElement(tag);
-        const inlineScript = document.createTextNode(appContent);
-        script.type = type;
-        script.id = microAppName;
-        script.appendChild(inlineScript);
-        document.getElementsByTagName('head')[0].appendChild(script);
-    }
-
     fetchMicroApp(microAppName: string) {
         if (!window || !window['fetch']) {
             return;
         }
         fetch(`${this.apiUrl}/registry/${microAppName}`)
-            .then(result => Promise.all([result.clone().text(), result.blob().then(blob => blob.type)]))
-            .then(([fileContent, type]) => {
-                switch (type) {
-                    case 'text/css':
-                        Loader.injectToHead(microAppName, fileContent, TAG.style, TAG_TYPE.style);
-                        break;
-                    case 'application/javascript':
-                        Loader.injectToHead(microAppName, fileContent, TAG.script, TAG_TYPE.script);
-                        break;
-                }
+            .then(result => result.json())
+            .then(files => {
+                files.forEach(({ type, file }) => {
+                    switch (type) {
+                        case 'css':
+                            Loader.injectToHead(microAppName, file, TAG.style, TAG_TYPE.style);
+                            break;
+                        case 'js':
+                            Loader.injectToHead(microAppName, file, TAG.script, TAG_TYPE.script);
+                            break;
+                    }
+                });
             });
+    }
+
+    static injectToHead(microAppName: string, appContent: string, tag: TAG, type: TAG_TYPE) {
+        const script = document.createElement(tag);
+        const inlineScript = document.createTextNode(appContent);
+        script.type = type;
+        script.id = `${microAppName}_${tag}`;
+        script.appendChild(inlineScript);
+        document.getElementsByTagName('head')[0].appendChild(script);
     }
 }
 
-export const ResourceLoader: MicroApp = {
-    deps: ['Config'],
-    name: 'Loader',
-    initialize: function(Config, AppsManager) {
-        return new Loader(AppsManager, Config);
-    },
-};

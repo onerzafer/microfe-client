@@ -1,5 +1,8 @@
-import { AppsManager, MicroApp } from './lib/AppsManager';
-import { ResourceLoader } from './lib/Loader';
+import { AppsManager} from './lib/AppsManager';
+import { ResourceLoader } from './lib/Loader.microapp';
+import { MicroApp } from './lib/AppsManager.interface';
+
+// TEST & DEV MICRO APPS
 const ConfigProvider: MicroApp = {
     name: 'Config',
     initialize: function() {
@@ -18,6 +21,7 @@ const MainApp: MicroApp = {
     },
 };
 
+// INITIALIZE
 const manager = new AppsManager();
 manager.register(ConfigProvider);
 manager.register(ResourceLoader);
