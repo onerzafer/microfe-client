@@ -14,10 +14,10 @@ const ConfigProvider: MicroApp = {
 
 const MainApp: MicroApp = {
     name: 'Main',
-    deps: ['Layout'],
-    initialize: function(Layout) {
+    deps: ['reactApp'],
+    initialize: function(reactApp) {
         const app = document.getElementById('app');
-        Layout.exec(app);
+        console.log(reactApp);
     },
 };
 
