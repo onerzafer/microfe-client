@@ -48,10 +48,15 @@ export class Loader {
 
     static injectToHead(microAppName: string, appContent: string, tag: TAG, type: TAG_TYPE) {
         const script = document.createElement(tag);
-        const inlineScript = document.createTextNode(appContent);
-        script.type = type;
+        const scriptAsBlob = new Blob([appContent], {type});
         script.id = `${microAppName}_${tag}_${new Date().getTime()}`;
-        script.appendChild(inlineScript);
+        if (tag === TAG.script) {
+            script.type = type;
+            (<HTMLScriptElement>script).src = URL.createObjectURL(scriptAsBlob);
+        } else {
+            (<HTMLLinkElement>script).rel = type;
+            (<HTMLLinkElement>script).href = URL.createObjectURL(scriptAsBlob);
+        }
         document.getElementsByTagName('head')[0].appendChild(script);
     }
 }

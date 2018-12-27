@@ -1,6 +1,6 @@
 export enum TAG {
     script = 'script',
-    style = 'style',
+    style = 'link',
 }
 
 export enum TAG_TYPE {
