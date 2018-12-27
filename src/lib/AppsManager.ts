@@ -1,5 +1,5 @@
-import { STATUS } from './status.enum'
-import { AnyObj, BoolObj, MicroApp, MicroAppDef, MicroAppsGraph } from './AppsManager.interface'
+import { STATUS } from './status.enum';
+import { AnyObj, BoolObj, MicroApp, MicroAppDef, MicroAppsGraph } from './AppsManager.interface';
 
 export class AppsManager {
     private microAppsGraph: MicroAppsGraph = {};
@@ -45,17 +45,14 @@ export class AppsManager {
     }
 
     dispatch() {
-        const appList = Object.keys(this.microAppsGraph)
-            .map(microAppName => this.microAppsGraph[microAppName]);
-        const notFoundList = appList
-            .filter(microApp => microApp.status === STATUS.NOTFOUND);
-        const nonBlockingList = appList
-            .filter(microApp => microApp.status === STATUS.NON_BLOCKING);
+        const appList = Object.keys(this.microAppsGraph).map(microAppName => this.microAppsGraph[microAppName]);
+        const notFoundList = appList.filter(microApp => microApp.status === STATUS.NOTFOUND);
+        const nonBlockingList = appList.filter(microApp => microApp.status === STATUS.NON_BLOCKING);
         if (notFoundList.length === 0 && nonBlockingList.length === 0) {
             return;
         }
         this.subscriptions.forEach(fn => {
-            fn.call(null, {blocking: notFoundList, nonBlocking: nonBlockingList});
+            fn.call(null, { blocking: notFoundList, nonBlocking: nonBlockingList });
         });
     }
 

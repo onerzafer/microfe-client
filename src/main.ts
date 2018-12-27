@@ -1,4 +1,4 @@
-import { AppsManager} from './lib/AppsManager';
+import { AppsManager } from './lib/AppsManager';
 import { ResourceLoader } from './lib/Loader.microapp';
 import { MicroApp } from './lib/AppsManager.interface';
 
@@ -14,10 +14,10 @@ const ConfigProvider: MicroApp = {
 
 const MainApp: MicroApp = {
     name: 'Main',
-    deps: ['reactApp'],
-    initialize: function(reactApp) {
-        const app = document.getElementById('app');
-        console.log(reactApp);
+    deps: ['Layout'],
+    initialize: function(...args) {
+        const [Loader] = args;
+        Loader.run(document.getElementById('app'));
     },
 };
 

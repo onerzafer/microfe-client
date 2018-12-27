@@ -1,4 +1,4 @@
-import { STATUS } from './status.enum'
+import { STATUS } from './status.enum';
 
 export interface MicroApp {
     name: string;
