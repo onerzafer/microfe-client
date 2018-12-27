@@ -50,7 +50,7 @@ export class Loader {
         const script = document.createElement(tag);
         const inlineScript = document.createTextNode(appContent);
         script.type = type;
-        script.id = `${microAppName}_${tag}`;
+        script.id = `${microAppName}_${tag}_${new Date().getTime()}`;
         script.appendChild(inlineScript);
         document.getElementsByTagName('head')[0].appendChild(script);
     }
