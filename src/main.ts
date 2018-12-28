@@ -12,14 +12,27 @@ const ConfigProvider: MicroApp = {
     },
 };
 
-const MainApp: MicroApp = {
+/* const MainApp: MicroApp = {
     name: 'Main',
     deps: ['Layout'],
     initialize: function(...args) {
         const [Loader] = args;
         Loader.run(document.getElementById('app'));
     },
+}; */
+
+const MainApp: MicroApp = {
+    name: 'Main',
+    deps: ['reactApp'],
+    initialize: function(...args) {
+        const [reactApp] = args;
+        const root = document.createElement('div');
+        root.id = 'root';
+        document.getElementById('app').appendChild(root);
+        reactApp.run();
+    },
 };
+
 
 // INITIALIZE
 const manager = new AppsManager();
