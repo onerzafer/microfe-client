@@ -23,13 +23,12 @@ const ConfigProvider: MicroApp = {
 
 const MainApp: MicroApp = {
     name: 'Main',
-    deps: ['reactApp'],
+    deps: ['todoApp'],
     initialize: function(...args) {
-        const [reactApp] = args;
-        const root = document.createElement('div');
-        root.id = 'root';
-        document.getElementById('app').appendChild(root);
-        reactApp.run();
+        const [todoApp] = args;
+        todoApp();
+        const todoAppEl = document.createElement('todo-app');
+        document.getElementById('app').appendChild(todoAppEl);
     },
 };
 
