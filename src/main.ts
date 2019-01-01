@@ -7,7 +7,7 @@ const ConfigProvider: MicroApp = {
     name: 'Config',
     initialize: function() {
         return {
-            registryApi: 'http://localhost:3000',
+            registryApi: 'http://localhost:9000',
         };
     },
 };

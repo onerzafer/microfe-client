@@ -27,10 +27,12 @@ export class Loader {
     }
 
     fetchMicroApp(microAppName: string) {
-        if (!window || !window['fetch']) {
+        const id = `${microAppName}_js_${new Date().getTime()}`;
+        Loader.injectJsToHead(id, `${this.apiUrl}/${microAppName}.js`);
+        /*if (!window || !window['fetch']) {
             return;
         }
-        fetch(`${this.apiUrl}/registry/${microAppName}`)
+        fetch(`${this.apiUrl}/${microAppName}.js`)
             .then(result => result.json())
             .then(files => {
                 files.forEach(({ type, file }) => {
@@ -44,7 +46,7 @@ export class Loader {
                             break;
                     }
                 });
-            });
+            });*/
     }
 
     static injectCssToHead(id: string, appContent: string) {
@@ -56,12 +58,11 @@ export class Loader {
         document.getElementsByTagName('head')[0].appendChild(style);
     }
 
-    static injectJsToHead(id: string, appContent: string) {
+    static injectJsToHead(id: string, appUrl: string) {
         const script = document.createElement(TAG.script) as HTMLScriptElement;
-        const scriptAsBlob = new Blob([appContent], { type: TAG_TYPE.script });
         script.id = id;
         script.type = TAG_TYPE.script;
-        script.src = URL.createObjectURL(scriptAsBlob);
+        script.src = appUrl;
         document.getElementsByTagName('head')[0].appendChild(script);
     }
 }

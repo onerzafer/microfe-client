@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const ROOT = path.resolve( __dirname, 'src' );
 const DESTINATION = path.resolve( __dirname, 'dist' );
@@ -14,6 +15,8 @@ module.exports = {
             'node_modules'
         ]
     },
+
+    plugins: [new CopyWebpackPlugin([{ from: '../micro-apps', to: 'micro-apps' }])],
 
     module: {
         rules: [

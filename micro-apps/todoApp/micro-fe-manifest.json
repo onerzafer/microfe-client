@@ -1,0 +1,11 @@
+{
+    "name": "todoApp",
+    "version": "1.0.0",
+    "type": "app",
+    "bundle": [
+        {"type": "js", "path": "static/js/runtime~main.229c360f.js"},
+        {"type": "js", "path": "static/js/main.381088ca.chunk.js"},
+        {"type": "js", "path": "static/js/1.41df01d0.chunk.js"},
+        {"type": "css", "path": "static/css/main.7cb72652.chunk.css"}
+    ]
+}
