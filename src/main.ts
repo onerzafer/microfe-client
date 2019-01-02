@@ -12,23 +12,11 @@ const ConfigProvider: MicroApp = {
     },
 };
 
-/* const MainApp: MicroApp = {
+ const MainApp: MicroApp = {
     name: 'Main',
-    deps: ['Layout'],
-    initialize: function(...args) {
-        const [Loader] = args;
-        Loader.run(document.getElementById('app'));
-    },
-}; */
-
-const MainApp: MicroApp = {
-    name: 'Main',
-    deps: ['todoApp'],
-    initialize: function(...args) {
-        const [todoApp] = args;
-        todoApp();
-        const todoAppEl = document.createElement('todo-app');
-        document.getElementById('app').appendChild(todoAppEl);
+    deps: ['LayoutApp'],
+    initialize: function() {
+        console.log('initialized');
     },
 };
 

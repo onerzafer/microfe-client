@@ -4,7 +4,7 @@ import { TAG, TAG_TYPE } from './tag.enum';
 
 export class Loader {
     private loadingList: string[] = [];
-    private apiUrl: string;
+    private readonly apiUrl: string;
 
     constructor(private appsManager: AppsManager, private config: { [key: string]: any }) {
         this.apiUrl = config.registryApi;
@@ -29,33 +29,6 @@ export class Loader {
     fetchMicroApp(microAppName: string) {
         const id = `${microAppName}_js_${new Date().getTime()}`;
         Loader.injectJsToHead(id, `${this.apiUrl}/${microAppName}.js`);
-        /*if (!window || !window['fetch']) {
-            return;
-        }
-        fetch(`${this.apiUrl}/${microAppName}.js`)
-            .then(result => result.json())
-            .then(files => {
-                files.forEach(({ type, file }) => {
-                    const id = `${microAppName}_${type}_${new Date().getTime()}`;
-                    switch (type) {
-                        case 'css':
-                            Loader.injectCssToHead(id, file);
-                            break;
-                        case 'js':
-                            Loader.injectJsToHead(id, file);
-                            break;
-                    }
-                });
-            });*/
-    }
-
-    static injectCssToHead(id: string, appContent: string) {
-        const style = document.createElement(TAG.style) as HTMLStyleElement;
-        style.id = id;
-        style.type = TAG_TYPE.style;
-        const styleTextContent = document.createTextNode(appContent);
-        style.appendChild(styleTextContent);
-        document.getElementsByTagName('head')[0].appendChild(style);
     }
 
     static injectJsToHead(id: string, appUrl: string) {

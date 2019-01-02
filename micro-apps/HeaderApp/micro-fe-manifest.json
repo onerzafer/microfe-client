@@ -1,0 +1,8 @@
+{
+  "name": "HeaderApp",
+  "bundle": [
+    {"type": "js", "path":"header.bundle.js"},
+    {"type": "css", "path":"header.css"}
+  ],
+  "version": "1.0.0"
+}

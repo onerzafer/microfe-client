@@ -1,0 +1,9 @@
+.header {
+    position: absolute;
+    width: 100vw;
+    box-sizing: border-box;
+    padding: 32px;
+    height: 80px;
+    background: #c0392b;
+    color: #FFFFFF;
+}

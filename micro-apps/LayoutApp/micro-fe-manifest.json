@@ -1,0 +1,12 @@
+{
+  "name": "LayoutApp",
+  "bundle": [
+    {"type": "js", "path":"layout.bundle.js"},
+    {"type": "css", "path":"layout.css"}
+  ],
+  "version": "1.0.0",
+  "dependencies": {
+    "HeaderApp": "1.0.0",
+    "ContentContainer": "1.0.0"
+  }
+}

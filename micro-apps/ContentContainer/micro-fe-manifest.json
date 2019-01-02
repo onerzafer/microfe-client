@@ -1,0 +1,11 @@
+{
+  "name": "ContentContainer",
+  "bundle": [
+    {"type": "js", "path":"content-container.bundle.js"},
+    {"type": "css", "path":"content-container.css"}
+  ],
+  "version": "1.0.0",
+  "dependencies": {
+    "reactDemo": "1.0.0"
+  }
+}
