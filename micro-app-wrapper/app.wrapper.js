@@ -56,7 +56,7 @@ class MicroAppWrapper {
             const cssFilesPromises = bundle
                 .filter(({ type }) => type === 'css')
                 .map(({ path }) => `${appRootPath}/${path}`)
-                .map(path => this.getCssFile(path));
+                .map(path => this.getCssFile(path).then(file => this.fixRelativePathsInCss(manifest.name, file)));
             const cssPromise = Promise.all(cssFilesPromises)
                 //.then(files => files.map(file => strip(file)))
                 .then(files => files.join(' ')); // concat css files
@@ -66,7 +66,7 @@ class MicroAppWrapper {
                 .map(path => this.getJsFile(path));
             const jsPromise = cssPromise.then(stylesAsText =>
                 Promise.all(jsFilePromises)
-                    .then(files => files.map(file => strip(file)))
+                    .then(files => files.map(file => this.fixRelativePathsInJs(manifest.name,strip(file))))
                     .then(files => files.join(' ')) // concat js files
                     .then(appContentAsText => this.wrapTheApp({ appContentAsText, ...manifest, stylesAsText }))
                     .then(appWrappedContentAsText => ({
@@ -116,6 +116,16 @@ class MicroAppWrapper {
                 .replace(/__nonBlockingDependencies__/g, parsedNonBlockingDeps)
                 .replace(/__appContentAsText__/g, appContentAsText)
         );
+    }
+
+    fixRelativePathsInCss(name, file) {
+        return file;
+    }
+
+    fixRelativePathsInJs(name, file) {
+        const path = `micro-apps/${name}/`;
+        const f = file;
+        return file.replace(/((?<=(["']))[\.\/a-zA-Z1-9]*?)((\.svg)|(\.jpg)|(\.gif))(?=\2)/g, `${path}$&`);
     }
 }
 

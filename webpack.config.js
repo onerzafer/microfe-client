@@ -27,7 +27,7 @@ module.exports = {
         new MicroAppWrapper({microApps: '../micro-apps', outFolderName: 'micro-apps'}),
         new CopyWebpackPlugin([
             { from: 'index.html', to: 'index.html' },
-            //{ from: '../micro-apps', to: 'micro-apps' }
+            { from: '../micro-apps', to: 'micro-apps' }
         ]),
     ],
 
