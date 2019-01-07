@@ -17,15 +17,8 @@ And also provide necessary tooling and a sample architecture for developers. The
 goal is making the developers and the companies life easier who are willing to adapt this
 architecture.
 ## Requirements
-To run this project on your local you need also [micro-fe-registry](https://github.com/onerzafer/micro-fe-registry)
-
 When you clone or download the project to your local, run following code to start the app
 ````bash
 npm install
 npm start
 ````
-## Experiments
-[![Generic badge](https://img.shields.io/badge/EX1-in%20progress-blue.svg)](experiment1.md)
-[![Generic badge](https://img.shields.io/badge/EX2-in%20planning-darkGray.svg)](experiment2.md)
- * Experiment 1: **EX1** [read more](experiment1.md)
- * Experiment 2: **EX2** [read more](experiment2.md)
