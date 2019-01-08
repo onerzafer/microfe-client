@@ -2,6 +2,7 @@ const fs = require('fs');
 const dashify = require('dashify');
 const walk = require('walk');
 const strip = require('strip-comments');
+const uniqid = require('uniqid');
 
 class MicroAppWrapper {
     constructor(config) {
@@ -14,7 +15,7 @@ class MicroAppWrapper {
                 .then(appRootPaths => {
                     return Promise.all(
                         appRootPaths.map(appRootPath =>
-                            this.getMicroApp(appRootPath).then(wrappedAppDef => {
+                            this.getMicroApp(appRootPath, uniqid('app-root-')).then(wrappedAppDef => {
                                 compilation.assets[`${wrappedAppDef.name}.js`] = {
                                     source: function() {
                                         return wrappedAppDef.file;
@@ -50,13 +51,13 @@ class MicroAppWrapper {
         });
     }
 
-    async getMicroApp(appRootPath) {
+    async getMicroApp(appRootPath, containerId) {
         return await this.getManifest(`${appRootPath}/micro-fe-manifest.json`).then(manifest => {
             const bundle = manifest.bundle || [];
             const cssFilesPromises = bundle
                 .filter(({ type }) => type === 'css')
                 .map(({ path }) => `${appRootPath}/${path}`)
-                .map(path => this.getCssFile(path).then(file => this.fixRelativePathsInCss(manifest.name, file)));
+                .map(path => this.getCssFile(path).then(file => this.fixRelativePathsInCss(manifest.name, containerId, file)));
             const cssPromise = Promise.all(cssFilesPromises)
                 //.then(files => files.map(file => strip(file)))
                 .then(files => files.join(' ')); // concat css files
@@ -68,7 +69,7 @@ class MicroAppWrapper {
                 Promise.all(jsFilePromises)
                     .then(files => files.map(file => this.fixRelativePathsInJs(manifest.name,strip(file))))
                     .then(files => files.join(' ')) // concat js files
-                    .then(appContentAsText => this.wrapTheApp({ appContentAsText, ...manifest, stylesAsText }))
+                    .then(appContentAsText => this.wrapTheApp({ appContentAsText, ...manifest, stylesAsText, containerId }))
                     .then(appWrappedContentAsText => ({
                         name: manifest.name,
                         file: appWrappedContentAsText,
@@ -96,7 +97,7 @@ class MicroAppWrapper {
         fs.readFile(path, { encoding: 'UTF8' }, (err, file) => (err ? reject(err) : resolve(file)));
     }
 
-    async wrapTheApp({ appContentAsText, name, dependencies, nonBlockingDependencies, stylesAsText = '' }) {
+    async wrapTheApp({ appContentAsText, name, dependencies, nonBlockingDependencies, stylesAsText = '', containerId }) {
         dependencies = dependencies || {};
         nonBlockingDependencies = nonBlockingDependencies || {}
         const parsedDep = Object.keys(dependencies)
@@ -110,6 +111,7 @@ class MicroAppWrapper {
         ).then(template =>
             template
                 .replace(/__kebab-name__/g, dashify(name))
+                .replace(/__container_id__/g, containerId)
                 .replace(/__name__/g, name)
                 .replace(/__stylesAsText__/g, stylesAsText)
                 .replace(/__dependencies__/g, parsedDep)
@@ -118,13 +120,14 @@ class MicroAppWrapper {
         );
     }
 
-    fixRelativePathsInCss(name, file) {
+    fixRelativePathsInCss(name, containerId, file) {
         const path = `micro-apps/${name}/`;
         const relativePathPatternInQuoute = /(?<=\(")((?!data:image)(?!http).)*?(?="\))/g;
         const relativePathPatternNoQuoute = /(?<=url\()((?!data:image)(?!http)(?!micro-apps).)*?(?=\))/g;
         return file
             .replace(relativePathPatternInQuoute, `${path}$&`)
-            .replace(relativePathPatternNoQuoute, `${path}$&`);
+            .replace(relativePathPatternNoQuoute, `${path}$&`)
+            .replace(/html|body/g, `#${containerId}`);
     }
 
     fixRelativePathsInJs(name, file) {

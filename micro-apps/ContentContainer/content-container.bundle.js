@@ -1,3 +1,3 @@
-container.classList.add('content-container');
+MICROAPP_CONTAINER.classList.add('content-container');
 const reactDemoAppElem = document.createElement('react-demo');
-container.appendChild(reactDemoAppElem);
+MICROAPP_CONTAINER.appendChild(reactDemoAppElem);

@@ -1,4 +1,4 @@
 const header = document.createElement('header-app');
 const content = document.createElement('content-container');
-container.appendChild(header);
-container.appendChild(content);
+MICROAPP_CONTAINER.appendChild(header);
+MICROAPP_CONTAINER.appendChild(content);

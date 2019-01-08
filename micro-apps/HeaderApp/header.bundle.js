@@ -1,2 +1,2 @@
-container.innerText = 'HEADER';
-container.classList.add('header');
+MICROAPP_CONTAINER.innerText = 'HEADER';
+MICROAPP_CONTAINER.classList.add('header');

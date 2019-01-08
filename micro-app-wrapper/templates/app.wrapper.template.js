@@ -17,13 +17,13 @@
                             shadow.appendChild(style);
                         }
                         const root = d.createElement('div');
-                        root.id = 'app-root';
+                        root.id = '__container_id__';
                         shadow.appendChild(root);
                     }
 
                     connectedCallback() {
-                        const container = this.shadowRoot.getElementById('app-root');
-                        microAppArgs = [container, ...microAppArgs];
+                        const MICROAPP_CONTAINER = this.shadowRoot.getElementById('__container_id__');
+                        microAppArgs = [MICROAPP_CONTAINER, ...microAppArgs];
                         __appContentAsText__;
                     }
                 }
