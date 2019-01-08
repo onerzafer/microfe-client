@@ -1,9 +1,9 @@
 {
   "name": "reactDemo",
   "bundle": [
-    {"type": "js", "path":"static/js/main.8f59ab22.chunk.js"},
     {"type": "js", "path":"static/js/runtime~main.229c360f.js"},
     {"type": "js", "path":"static/js/1.fa92c112.chunk.js"},
+    {"type": "js", "path":"static/js/main.8f59ab22.chunk.js"},
     {"type": "css", "path":"static/css/main.f53434f8.chunk.css"}
   ],
   "version": "1.0.0"

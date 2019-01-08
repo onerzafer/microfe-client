@@ -1,8 +1,7 @@
 .content-container {
-    padding: 112px 32px;
     box-sizing: border-box;
     width: 100vw;
-    min-height: 100vh;
+    min-height: calc(100vh - 80px);
     background: #ecf0f1;
     color: #2c3e50;
 }

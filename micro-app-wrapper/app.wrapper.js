@@ -132,7 +132,8 @@ class MicroAppWrapper {
 
     fixRelativePathsInJs(name, file) {
         const path = `micro-apps/${name}/`;
-        return file.replace(/((?<=(["']))[\.\/a-zA-Z1-9]*?)(\.((sv|pn)g)|(jpe?g)|(gif))(?=\2)/g, `${path}$&`);
+        return file
+            .replace(/((?<=(["']))[\.\/a-zA-Z1-9]*?)(\.((sv|pn)g)|(jpe?g)|(gif))(?=\2)/g, `${path}$&`);
     }
 }
 

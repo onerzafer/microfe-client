@@ -1,6 +1,7 @@
-(function(w, d) {
-    if (w && w.AppsManager && w.AppsManager.register) {
-        w.AppsManager.register({
+(function(WINDOW, DOCUMENT) {
+    window = undefined;
+    if (WINDOW && WINDOW.AppsManager && WINDOW.AppsManager.register) {
+        WINDOW.AppsManager.register({
             name: '__name__',
             deps: [__dependencies__],
             noneBlockingDeps: [__nonBlockingDependencies__],
@@ -11,12 +12,12 @@
                         super();
                         const shadow = this.attachShadow({ mode: 'open' });
                         if (stylesAsText && stylesAsText !== '') {
-                            const style = d.createElement('style');
-                            const styleTextNode = d.createTextNode(stylesAsText);
+                            const style = DOCUMENT.createElement('style');
+                            const styleTextNode = DOCUMENT.createTextNode(stylesAsText);
                             style.appendChild(styleTextNode);
                             shadow.appendChild(style);
                         }
-                        const root = d.createElement('div');
+                        const root = DOCUMENT.createElement('app-root');
                         root.id = '__container_id__';
                         shadow.appendChild(root);
                     }
