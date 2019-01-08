@@ -4,6 +4,6 @@
     box-sizing: border-box;
     padding: 32px;
     height: 80px;
-    background: #c0392b;
+    background: #c0392b url("assets/hexagons.svg") repeat center;
     color: #FFFFFF;
 }

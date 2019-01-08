@@ -119,13 +119,17 @@ class MicroAppWrapper {
     }
 
     fixRelativePathsInCss(name, file) {
-        return file;
+        const path = `micro-apps/${name}/`;
+        const relativePathPatternInQuoute = /(?<=\(")((?!data:image)(?!http).)*?(?="\))/g;
+        const relativePathPatternNoQuoute = /(?<=url\()((?!data:image)(?!http)(?!micro-apps).)*?(?=\))/g;
+        return file
+            .replace(relativePathPatternInQuoute, `${path}$&`)
+            .replace(relativePathPatternNoQuoute, `${path}$&`);
     }
 
     fixRelativePathsInJs(name, file) {
         const path = `micro-apps/${name}/`;
-        const f = file;
-        return file.replace(/((?<=(["']))[\.\/a-zA-Z1-9]*?)((\.svg)|(\.jpg)|(\.gif))(?=\2)/g, `${path}$&`);
+        return file.replace(/((?<=(["']))[\.\/a-zA-Z1-9]*?)(\.((sv|pn)g)|(jpe?g)|(gif))(?=\2)/g, `${path}$&`);
     }
 }
 
