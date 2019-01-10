@@ -4,10 +4,10 @@ import { TAG, TAG_TYPE } from './tag.enum';
 
 export class Loader {
     private loadingList: string[] = [];
-    private readonly apiUrl: string;
+    private readonly apiUrl: string = '';
 
     constructor(private appsManager: AppsManager, private config: { [key: string]: any }) {
-        this.apiUrl = config.registryApi;
+        this.apiUrl = config && config.registryApi || '';
         appsManager.subscribe(this.onNotFoundApp.bind(this));
     }
 

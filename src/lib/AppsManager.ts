@@ -107,7 +107,7 @@ export class AppsManager {
             )
             .forEach(microAppName => {
                 const deps = this.provideDepsInstances(this.microAppsGraph[microAppName].deps);
-                this.instanceCache[microAppName] = new this.microAppsGraph[microAppName].app.initialize(...deps);
+                this.instanceCache[microAppName] = this.microAppsGraph[microAppName].app.initialize(...deps);
                 this.microAppsGraph[microAppName].status = STATUS.RUNNING;
                 hasSomethingRun = true;
             });
