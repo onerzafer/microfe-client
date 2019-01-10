@@ -57,7 +57,9 @@ class MicroAppWrapper {
             const cssFilesPromises = bundle
                 .filter(({ type }) => type === 'css')
                 .map(({ path }) => `${appRootPath}/${path}`)
-                .map(path => this.getCssFile(path).then(file => this.fixRelativePathsInCss(manifest.name, containerId, file)));
+                .map(path =>
+                    this.getCssFile(path).then(file => MicroAppWrapper.fixRelativePathsInCss(manifest.name, containerId, file))
+                );
             const cssPromise = Promise.all(cssFilesPromises)
                 //.then(files => files.map(file => strip(file)))
                 .then(files => files.join(' ')); // concat css files
@@ -67,9 +69,11 @@ class MicroAppWrapper {
                 .map(path => this.getJsFile(path));
             const jsPromise = cssPromise.then(stylesAsText =>
                 Promise.all(jsFilePromises)
-                    .then(files => files.map(file => this.fixRelativePathsInJs(manifest.name,strip(file))))
+                    .then(files => files.map(file => MicroAppWrapper.fixRelativePathsInJs(manifest.name, strip(file))))
                     .then(files => files.join(' ')) // concat js files
-                    .then(appContentAsText => this.wrapTheApp({ appContentAsText, ...manifest, stylesAsText, containerId }))
+                    .then(appContentAsText =>
+                        this.wrapTheApp({ appContentAsText, ...manifest, stylesAsText, containerId })
+                    )
                     .then(appWrappedContentAsText => ({
                         name: manifest.name,
                         file: appWrappedContentAsText,
@@ -97,9 +101,17 @@ class MicroAppWrapper {
         fs.readFile(path, { encoding: 'UTF8' }, (err, file) => (err ? reject(err) : resolve(file)));
     }
 
-    async wrapTheApp({ appContentAsText, name, dependencies, nonBlockingDependencies, stylesAsText = '', containerId }) {
+    async wrapTheApp({
+        appContentAsText,
+        name,
+        dependencies,
+        nonBlockingDependencies,
+        stylesAsText = '',
+        containerId,
+        type = 'default',
+    }) {
         dependencies = dependencies || {};
-        nonBlockingDependencies = nonBlockingDependencies || {}
+        nonBlockingDependencies = nonBlockingDependencies || {};
         const parsedDep = Object.keys(dependencies)
             .map(dep => "'" + dep + "'")
             .join(', ');
@@ -107,20 +119,39 @@ class MicroAppWrapper {
             .map(dep => "'" + dep + "'")
             .join(', ');
         return await new Promise((resolve, reject) =>
-            this.readFile(`${__dirname}/templates/app.wrapper.template.js`, resolve, reject)
-        ).then(template =>
-            template
-                .replace(/__kebab-name__/g, dashify(name))
-                .replace(/__container_id__/g, containerId)
-                .replace(/__name__/g, name)
-                .replace(/__stylesAsText__/g, stylesAsText)
-                .replace(/__dependencies__/g, parsedDep)
-                .replace(/__nonBlockingDependencies__/g, parsedNonBlockingDeps)
-                .replace(/__appContentAsText__/g, appContentAsText)
-        );
+            this.readFile(`${__dirname}/templates/${MicroAppWrapper.templatePath(type)}`, resolve, reject)
+        )
+            .then(template =>
+                template
+                    .replace(/__kebab-name__/g, dashify(name))
+                    .replace(/__container_id__/g, containerId)
+                    .replace(/__name__/g, name)
+                    .replace(/__stylesAsText__/g, stylesAsText)
+                    .replace(/__dependencies__/g, parsedDep)
+                    .replace(/__nonBlockingDependencies__/g, parsedNonBlockingDeps)
+            )
+            .then(temp => {
+                const tempParts = temp.split('__appContentAsText__');
+                return [
+                    tempParts[0],
+                    appContentAsText.replace(/webpackJsonp/g, `webpackJsonp__${name}`),
+                    tempParts[1],
+                ].join('');
+            });
     }
 
-    fixRelativePathsInCss(name, containerId, file) {
+    static templatePath(type) {
+        switch (type) {
+            case 'web component':
+                return 'web-component.wrapper.template.js';
+            case 'service':
+                return 'service.wrapper.template.js';
+            default:
+                return 'app.wrapper.template.js';
+        }
+    }
+
+    static fixRelativePathsInCss(name, containerId, file) {
         const path = `micro-apps/${name}/`;
         const relativePathPatternInQuoute = /(?<=\(")((?!data:image)(?!http).)*?(?="\))/g;
         const relativePathPatternNoQuoute = /(?<=url\()((?!data:image)(?!http)(?!micro-apps).)*?(?=\))/g;
@@ -130,10 +161,9 @@ class MicroAppWrapper {
             .replace(/html|body/g, `#${containerId}`);
     }
 
-    fixRelativePathsInJs(name, file) {
+    static fixRelativePathsInJs(name, file) {
         const path = `micro-apps/${name}/`;
-        return file
-            .replace(/((?<=(["']))[\.\/a-zA-Z1-9]*?)(\.((sv|pn)g)|(jpe?g)|(gif))(?=\2)/g, `${path}$&`);
+        return file.replace(/((?<=(["']))[\.\/a-zA-Z1-9]*?)(\.((sv|pn)g)|(jpe?g)|(gif))(?=\2)/g, `${path}$&`);
     }
 }
 

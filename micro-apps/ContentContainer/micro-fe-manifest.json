@@ -6,6 +6,7 @@
   ],
   "version": "1.0.0",
   "dependencies": {
-    "reactDemo": "1.0.0"
+    "reactDemo": "1.0.0",
+    "demoAngular": "1.0.0"
   }
 }

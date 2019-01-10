@@ -23,6 +23,14 @@ module.exports = {
         modules: [ROOT, 'node_modules'],
     },
 
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+            name: false,
+        },
+        runtimeChunk: true,
+    },
+
     plugins: [
         new MicroAppWrapper({microApps: '../micro-apps', outFolderName: 'micro-apps'}),
         new CopyWebpackPlugin([
