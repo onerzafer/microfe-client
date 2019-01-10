@@ -36,6 +36,8 @@ export class Loader {
         script.id = id;
         script.type = TAG_TYPE.script;
         script.src = appUrl;
-        document.getElementsByTagName('head')[0].appendChild(script);
+        script.setAttribute('async', '');
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(script, firstScriptTag);
     }
 }
