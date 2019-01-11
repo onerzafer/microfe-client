@@ -107,7 +107,7 @@ export class AppsManager {
             )
             .forEach(microAppName => {
                 const deps = this.provideDepsInstances(this.microAppsGraph[microAppName].deps);
-                this.instanceCache[microAppName] = this.microAppsGraph[microAppName].app.initialize(...deps);
+                this.instanceCache[microAppName] = this.microAppsGraph[microAppName].app.initialize(deps);
                 this.microAppsGraph[microAppName].status = STATUS.RUNNING;
                 hasSomethingRun = true;
             });
@@ -131,8 +131,16 @@ export class AppsManager {
         }
     }
 
-    private provideDepsInstances(deps: string[]): any[] {
-        return [...deps.map(dep => this.instanceCache[dep]), this];
+    private provideDepsInstances(deps: string[]): { [key: string]: any } {
+        return deps.reduce(
+            (cumulative, current) => {
+                return {
+                    ...cumulative,
+                    [current]: this.instanceCache[current],
+                };
+            },
+            { AppsManager: this }
+        );
     }
 
     static generateMicroAppDef(microApp: MicroApp): MicroAppDef {

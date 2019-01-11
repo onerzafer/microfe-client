@@ -2,6 +2,7 @@ const path = require('path');
 const MicroAppWrapper = require('./micro-app-wrapper/app.wrapper');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const rxPaths = require('rxjs/_esm5/path-mapping');
 
 const ROOT = path.resolve(__dirname, 'src');
 const DESTINATION = path.resolve(__dirname, 'dist');
@@ -21,6 +22,7 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.js'],
         modules: [ROOT, 'node_modules'],
+        alias: rxPaths()
     },
 
     optimization: {
@@ -32,6 +34,15 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.optimize.ModuleConcatenationPlugin(),
+        new webpack.LoaderOptionsPlugin({
+            options: {
+                tslint: {
+                    emitErrors: true,
+                    failOnHint: false,
+                },
+            },
+        }),
         new MicroAppWrapper({microApps: '../micro-apps', outFolderName: 'micro-apps'}),
         new CopyWebpackPlugin([
             { from: 'index.html', to: 'index.html' },

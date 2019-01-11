@@ -5,7 +5,7 @@
             name: '__name__',
             deps: [__dependencies__],
             noneBlockingDeps: [__nonBlockingDependencies__],
-            initialize: (...microAppArgs) => {
+            initialize: (microAppArgs) => {
                 __appContentAsText__;
             },
         });

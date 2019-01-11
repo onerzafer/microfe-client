@@ -5,7 +5,7 @@
             name: '__name__',
             deps: [__dependencies__],
             noneBlockingDeps: [__nonBlockingDependencies__],
-            initialize: (...microAppArgs) => {
+            initialize: (microAppArgs) => {
                 const stylesAsText = `__stylesAsText__`;
                 class __name__ extends HTMLElement {
                     constructor() {
@@ -24,7 +24,7 @@
 
                     connectedCallback() {
                         const MICROAPP_CONTAINER = this.shadowRoot.getElementById('__container_id__');
-                        microAppArgs = [MICROAPP_CONTAINER, ...microAppArgs];
+                        microAppArgs['container'] = MICROAPP_CONTAINER;
                         __appContentAsText__;
                     }
                 }

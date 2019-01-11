@@ -1,5 +1,12 @@
+const { container, EventBus } = microAppArgs;
+
+let counter = 0;
+setInterval(() => {
+    EventBus.dispatch({ type: 'tick', payload: counter++ });
+}, 1000);
+
 const reactDemoAppElem = document.createElement('react-demo');
-MICROAPP_CONTAINER.appendChild(reactDemoAppElem);
+container.appendChild(reactDemoAppElem);
 
 const demoAngularElm = document.createElement('demo-angular');
-MICROAPP_CONTAINER.appendChild(demoAngularElm);
+container.appendChild(demoAngularElm);

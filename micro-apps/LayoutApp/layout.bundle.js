@@ -1,4 +1,5 @@
+const { container } = microAppArgs;
 const header = document.createElement('header-app');
 const content = document.createElement('content-container');
-MICROAPP_CONTAINER.appendChild(header);
-MICROAPP_CONTAINER.appendChild(content);
+container.appendChild(header);
+container.appendChild(content);

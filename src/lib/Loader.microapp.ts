@@ -4,7 +4,7 @@ import { Loader } from './Loader';
 export const ResourceLoader: MicroApp = {
     deps: ['Config'],
     name: 'Loader',
-    initialize: function(Config, AppsManager) {
+    initialize: function({AppsManager, Config}) {
         return new Loader(AppsManager, Config);
     },
 };

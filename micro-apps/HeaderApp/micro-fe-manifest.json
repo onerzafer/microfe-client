@@ -4,5 +4,8 @@
     {"type": "js", "path":"header.bundle.js"},
     {"type": "css", "path":"header.css"}
   ],
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "dependencies": {
+    "EventBus": "1.0.0"
+  }
 }
