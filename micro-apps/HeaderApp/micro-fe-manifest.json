@@ -6,6 +6,6 @@
   ],
   "version": "1.0.0",
   "dependencies": {
-    "EventBus": "1.0.0"
+    "MicroAppStore": "1.0.0"
   }
 }

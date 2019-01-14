@@ -1,7 +1,7 @@
 import { AppsManager } from './lib/AppsManager';
 import { ResourceLoader } from './lib/Loader.microapp';
 import { MicroApp } from './lib/AppsManager.interface';
-import { EventBus } from './lib/EventBus';
+import { MicroAppStore } from './lib/Store.microapp';
 
 // TEST & DEV MICRO APPS
 const ConfigProvider: MicroApp = {
@@ -22,6 +22,6 @@ const MainApp: MicroApp = {
 // INITIALIZE
 const manager = new AppsManager();
 manager.register(ConfigProvider);
-manager.register(EventBus);
+manager.register(MicroAppStore);
 manager.register(ResourceLoader);
 manager.register(MainApp);

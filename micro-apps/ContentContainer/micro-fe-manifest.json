@@ -8,6 +8,6 @@
   "dependencies": {
     "reactDemo": "1.0.0",
     "demoAngular": "1.0.0",
-    "EventBus": "1.0.0"
+    "MicroAppStore": "1.0.0"
   }
 }
