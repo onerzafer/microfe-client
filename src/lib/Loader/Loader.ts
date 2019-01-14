@@ -1,6 +1,6 @@
-import { AppsManager } from './AppsManager';
-import { MicroAppDef } from './AppsManager.interface';
-import { TAG, TAG_TYPE } from './tag.enum';
+import { AppsManager } from '../AppsManager/AppsManager';
+import { MicroAppDef } from '../AppsManager/AppsManager.interface';
+import { TAG, TAG_TYPE } from '../AppsManager/tag.enum';
 
 export class Loader {
     private loadingList: string[] = [];

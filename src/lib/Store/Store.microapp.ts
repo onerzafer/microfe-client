@@ -1,4 +1,4 @@
-import { MicroApp } from './AppsManager.interface';
+import { MicroApp } from '../AppsManager/AppsManager.interface';
 import { Store } from './Store';
 
 export const MicroAppStore: MicroApp = {

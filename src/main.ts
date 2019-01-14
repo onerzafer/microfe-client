@@ -1,15 +1,5 @@
-import { AppsManager } from './lib/AppsManager';
-import { ResourceLoader } from './lib/Loader.microapp';
-import { MicroApp } from './lib/AppsManager.interface';
-import { MicroAppStore } from './lib/Store.microapp';
-
-// TEST & DEV MICRO APPS
-const ConfigProvider: MicroApp = {
-    name: 'Config',
-    initialize: () => ({
-        registryApi: 'http://localhost:9000',
-    }),
-};
+import { MicroApp } from './lib/AppsManager/AppsManager.interface';
+import { MicroAppInitInfrastructure } from './lib/Infrastructure/InitInfrastructure';
 
 const MainApp: MicroApp = {
     name: 'Main',
@@ -20,8 +10,4 @@ const MainApp: MicroApp = {
 };
 
 // INITIALIZE
-const manager = new AppsManager();
-manager.register(ConfigProvider);
-manager.register(MicroAppStore);
-manager.register(ResourceLoader);
-manager.register(MainApp);
+MicroAppInitInfrastructure(MainApp, { registryApi: 'http://localhost:9000' });

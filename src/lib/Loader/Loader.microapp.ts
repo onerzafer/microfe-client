@@ -1,4 +1,4 @@
-import { MicroApp } from './AppsManager.interface';
+import { MicroApp } from '../AppsManager/AppsManager.interface';
 import { Loader } from './Loader';
 
 export const ResourceLoader: MicroApp = {
