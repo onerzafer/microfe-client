@@ -10,36 +10,21 @@ const Links = {
     reactLink: document.createElement('a'),
 };
 Links.angularLink.innerText = 'Angular App';
-Links.angularLink.onclick = () => MicroAppRouter.navigate('/angular');
+Links.angularLink.href = '/angular';
+Links.angularLink.onclick = (e) => { MicroAppRouter.navigate(Links.angularLink.href); e.preventDefault(); return false;};
 container.appendChild(Links.angularLink);
 Links.reactLink.innerText = 'React App';
-Links.reactLink.onclick = () => MicroAppRouter.navigate('/react');
+Links.reactLink.href = '/react';
+Links.reactLink.onclick = (e) => { MicroAppRouter.navigate(Links.reactLink.href); e.preventDefault(); return false;};
 container.appendChild(Links.reactLink);
 container.classList.add('header');
 
-function removeActiveClass(path) {
-    switch (path) {
-        case '/angular':
-            Links.angularLink.classList.remove('active');
-            break;
-        case '/react':
-            Links.reactLink.classList.remove('active');
-            break;
-    }
-}
-
-function addActiveClass(path) {
-    switch (path) {
-        case '/angular':
-            Links.angularLink.classList.add('active');
-            break;
-        case '/react':
-            Links.reactLink.classList.add('active');
-            break;
-    }
-}
-
-MicroAppRouter.onChange((oldPath, newPath) => {
-    addActiveClass(newPath);
-    removeActiveClass(oldPath);
+MicroAppRouter.onChange(() => {
+    Object.keys(Links).forEach(key => {
+        if(MicroAppRouter.isActive(Links[key].href)) {
+            Links[key].classList.add('active');
+        } else {
+            Links[key].classList.remove('active');
+        }
+    })
 });

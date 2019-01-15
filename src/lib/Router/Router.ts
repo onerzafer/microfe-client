@@ -1,58 +1,78 @@
+import { ResolvedRoute, Route } from './Router.interface';
+
 export class Router {
-    oldPath: string;
+    private oldRoute: ResolvedRoute;
     private onChangeHandlers: Array<(oldPath: string, newPath: string) => void> = [];
-    constructor(private routes: { [key: string]: any }) {
-        window.onpopstate = e => {
-            console.log('popstate', e);
-            e.preventDefault();
-            return false;
+
+    constructor(private routes: Route[]) {
+        window.onpopstate = () => {
+            this.navigate(window.location.pathname);
         };
 
-        window.onhashchange = e => {
-            console.log('hashchange', e);
-        };
-
-        this.navigate(window.location.pathname);
+        this.navigate(window.location.pathname, true);
     }
 
-    navigate(path: string) {
-        const resolvedPath = this.resolve(path);
-        if (this.oldPath !== resolvedPath) {
-            if (this.isHit(resolvedPath)) {
-                window.history.pushState(undefined, undefined, resolvedPath);
-                this.changed(resolvedPath);
-            } else {
-                window.location.href = resolvedPath;
+    navigate(path: string, isSilent: boolean = false) {
+        const resolvedRoute = this.resolve(this.cleanPath(path));
+        if (resolvedRoute) {
+            if (!this.oldRoute || this.oldRoute.path !== resolvedRoute.path) {
+                if (!isSilent) {
+                    window.history.pushState(undefined, undefined, resolvedRoute.path);
+                }
+                this.changed(resolvedRoute);
             }
+        } else {
+            window.location.href = this.cleanPath(path);
         }
     }
 
-    onChange(fn: (oldPath: string, newPath: string) => void) {
+    onChange(fn: (oldPath: string, newPath: string, resolvedRoute?: ResolvedRoute) => void) {
         this.onChangeHandlers.push(fn);
-        if (this.oldPath) {
-            fn.apply(null, [undefined, this.oldPath]);
+        if (this.oldRoute) {
+            fn.apply(null, [undefined, this.oldRoute.path, this.oldRoute]);
         }
     }
 
-    private changed(path: string) {
+    isActive(pathToCheck: string): boolean {
+        return this.oldRoute && this.isHit(this.oldRoute.route, this.cleanPath(pathToCheck));
+    }
+
+    private cleanPath(path: string): string {
+        return path.replace(new RegExp(window.location.origin), '');
+    }
+
+    private changed(resolvedRoute: ResolvedRoute) {
+        const oldPath = this.oldRoute && this.oldRoute.path;
+        this.oldRoute = {
+            ...resolvedRoute,
+        };
         this.onChangeHandlers.forEach(fn => {
-            fn.apply(null, [this.oldPath, path]);
+            fn.apply(null, [oldPath, resolvedRoute.path, resolvedRoute]);
         });
-        this.oldPath = path;
     }
 
-    private isHit(path: string): boolean {
-        return Object.keys(this.routes).includes(path);
-    }
-
-    private resolve(path: string): string {
-        const pathObj = this.routes[path];
-        if (pathObj && !pathObj.redirectTo) {
-            return path;
-        } else if (pathObj && pathObj.redirectTo) {
-            return this.resolve(pathObj.redirectTo);
+    private resolve(path: string): ResolvedRoute {
+        const foundRoute = this.routes.find(route => this.isHit(route, path));
+        if (foundRoute && !foundRoute.redirectTo) {
+            return {
+                path: path,
+                resolvedPath: foundRoute.path,
+                route: {
+                    ...foundRoute,
+                },
+            };
+        } else if (foundRoute && foundRoute.redirectTo) {
+            return this.resolve(foundRoute.redirectTo);
         } else {
             return undefined;
         }
+    }
+
+    private isHit(route: Route, path: string): boolean {
+        return route.path === '/' ? route.path === path : this.pathToRegexp(route.path).test(path);
+    }
+
+    private pathToRegexp(path: string): RegExp {
+        return new RegExp(`^${path.replace(/\\\//g, '/').replace('*', '.*?')}`);
     }
 }

@@ -12,12 +12,14 @@ const MainApp: MicroApp = {
 // INITIALIZE
 MicroAppInitInfrastructure(
     MainApp,
-    { registryApi: 'http://localhost:9000' },
-    {
-        '/': { redirectTo: '/angular' },
-        '/react': { microApp: 'reactDemo', tagName: 'react-demo' },
-        '/react/*': { microApp: 'reactDemo', tagName: 'react-demo' },
-        '/react/some/app/*': { microApp: 'reactDemo', tagName: 'react-demo' },
-        '/angular': { microApp: 'demoAngular', tagName: 'demo-angular' },
-    }
+    [
+        { path: '/', redirectTo: '/angular' },
+        { path: '/angular/*', microApp: 'demoAngular', tagName: 'demo-angular' },
+        { path: '/angular', microApp: 'demoAngular', tagName: 'demo-angular' },
+        { path: '/react', microApp: 'reactDemo', tagName: 'react-demo' },
+        { path: '/react/*', microApp: 'reactDemo', tagName: 'react-demo' },
+        { path: '/react/abc/*', microApp: 'reactDemo', tagName: 'react-demo' },
+        { path: '*', microApp: 'NotFoundApp', tagName: 'not-found-app' },
+    ],
+    { registryApi: 'http://localhost:9000' }
 );

@@ -1,0 +1,8 @@
+{
+  "name": "NotFoundApp",
+  "bundle": [
+    {"type": "js", "path":"notfound.bundle.js"},
+    {"type": "css", "path":"notfound.css"}
+  ],
+  "version": "1.0.0"
+}
