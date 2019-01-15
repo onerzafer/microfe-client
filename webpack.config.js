@@ -34,6 +34,9 @@ module.exports = {
     },
 
     plugins: [
+        new webpack.WatchIgnorePlugin([
+            path.join(__dirname, "node_modules")
+        ]),
         new webpack.optimize.ModuleConcatenationPlugin(),
         new webpack.LoaderOptionsPlugin({
             options: {
@@ -83,12 +86,14 @@ module.exports = {
         contentBase: path.join(__dirname, 'dist'),
         compress: true,
         port: 9000,
-        hot: false,
+        hot: true,
         index: 'index.html',
         inline: false,
         watchOptions: {
             aggregateTimeout: 300,
             poll: 1000,
         },
+        disableHostCheck: true,
+        historyApiFallback: true,
     },
 };

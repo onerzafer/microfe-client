@@ -11,19 +11,27 @@ export class Router {
         window.onhashchange = e => {
             console.log('hashchange', e);
         };
+
+        this.navigate(window.location.pathname);
     }
 
     navigate(path: string) {
-        if (this.isHit(path)) {
-            window.history.pushState(undefined, undefined, path);
-            this.changed(path);
-        } else {
-            window.location.href = path;
+        const resolvedPath = this.resolve(path);
+        if (this.oldPath !== resolvedPath) {
+            if (this.isHit(resolvedPath)) {
+                window.history.pushState(undefined, undefined, resolvedPath);
+                this.changed(resolvedPath);
+            } else {
+                window.location.href = resolvedPath;
+            }
         }
     }
 
     onChange(fn: (oldPath: string, newPath: string) => void) {
         this.onChangeHandlers.push(fn);
+        if (this.oldPath) {
+            fn.apply(null, [undefined, this.oldPath]);
+        }
     }
 
     private changed(path: string) {
@@ -35,5 +43,16 @@ export class Router {
 
     private isHit(path: string): boolean {
         return Object.keys(this.routes).includes(path);
+    }
+
+    private resolve(path: string): string {
+        const pathObj = this.routes[path];
+        if (pathObj && !pathObj.redirectTo) {
+            return path;
+        } else if (pathObj && pathObj.redirectTo) {
+            return this.resolve(pathObj.redirectTo);
+        } else {
+            return undefined;
+        }
     }
 }

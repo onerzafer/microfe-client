@@ -7,6 +7,16 @@ export const MicroAppRouter: (routes: { [key: string]: any }) => MicroApp = (rou
     name: 'MicroAppRouter',
     deps: ['Loader'],
     initialize: ({ Loader }: { Loader: Loader; AppsManager: AppsManager }) => {
+        routes = Object.keys(routes).reduce(
+            (enhancedRoutes, key) => ({
+                ...enhancedRoutes,
+                [key]: {
+                    ...routes[key],
+                    path: key,
+                },
+            }),
+            {}
+        );
         const router = new Router(routes);
         class RouterOutlet extends HTMLElement {
             router: Router = router;
@@ -18,12 +28,14 @@ export const MicroAppRouter: (routes: { [key: string]: any }) => MicroApp = (rou
 
             private handlePath(oldPath: string, newPath: string) {
                 const resolvedPath = routes[newPath];
-                Loader.fetchMicroApp(resolvedPath.microApp);
-                const appTag = document.createElement(resolvedPath.tagName);
-                while (this.shadow.firstChild) {
-                    this.shadow.removeChild(this.shadow.firstChild);
+                if (resolvedPath) {
+                    Loader.fetchMicroApp(resolvedPath.microApp);
+                    const appTag = document.createElement(resolvedPath.tagName);
+                    while (this.shadow.firstChild) {
+                        this.shadow.removeChild(this.shadow.firstChild);
+                    }
+                    this.shadow.appendChild(appTag);
                 }
-                this.shadow.appendChild(appTag);
             }
         }
         customElements.define('micro-router', RouterOutlet);

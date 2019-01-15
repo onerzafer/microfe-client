@@ -6,7 +6,7 @@
     color: #ffffff;
     background: #2c3e50;
     font-family: sans-serif;
-    box-shadow: 0 0 4px 2px #7f8c8d;
+    box-shadow: 0 0 4px 2px rgba(0,0,0, 0.3);
 }
 
 .header {
@@ -19,10 +19,19 @@
 }
 
 a {
-    padding: 32px;
+    padding: 0 32px;
     text-decoration: none;
     color: currentColor;
     cursor: pointer;
+    box-sizing: border-box;
+    height: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+a.active {
+    border-bottom: currentColor solid 3px;
 }
 
 a:hover {
