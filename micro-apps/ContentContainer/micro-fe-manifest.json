@@ -6,8 +6,7 @@
   ],
   "version": "1.0.0",
   "dependencies": {
-    "reactDemo": "1.0.0",
-    "demoAngular": "1.0.0",
-    "MicroAppStore": "1.0.0"
+    "MicroAppStore": "1.0.0",
+    "MicroAppRouter": "1.0.0"
   }
 }

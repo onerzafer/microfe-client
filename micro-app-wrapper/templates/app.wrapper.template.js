@@ -5,7 +5,7 @@
             name: '__name__',
             deps: [__dependencies__],
             noneBlockingDeps: [__nonBlockingDependencies__],
-            initialize: (microAppArgs) => {
+            initialize: microAppArgs => {
                 const stylesAsText = `__stylesAsText__`;
                 class __name__ extends HTMLElement {
                     constructor() {
@@ -23,6 +23,9 @@
                     }
 
                     connectedCallback() {
+                        if (window.webpackJsonp____name__ && window.webpackJsonp____name__.length) {
+                            delete window.webpackJsonp____name__;
+                        }
                         const MICROAPP_CONTAINER = this.shadowRoot.getElementById('__container_id__');
                         microAppArgs['container'] = MICROAPP_CONTAINER;
                         __appContentAsText__;

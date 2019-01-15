@@ -7,7 +7,7 @@ export class Loader {
     private readonly apiUrl: string = '';
 
     constructor(private appsManager: AppsManager, private config: { [key: string]: any }) {
-        this.apiUrl = config && config.registryApi || '';
+        this.apiUrl = (config && config.registryApi) || '';
         appsManager.subscribe(this.onNotFoundApp.bind(this));
     }
 
@@ -27,8 +27,10 @@ export class Loader {
     }
 
     fetchMicroApp(microAppName: string) {
-        const id = `${microAppName}_js_${new Date().getTime()}`;
-        Loader.injectJsToHead(id, `${this.apiUrl}/${microAppName}.js`);
+        if (!this.appsManager.isDefinedBefore(microAppName)) {
+            const id = `${microAppName}_js_${new Date().getTime()}`;
+            Loader.injectJsToHead(id, `${this.apiUrl}/${microAppName}.js`);
+        }
     }
 
     static injectJsToHead(id: string, appUrl: string) {

@@ -13,7 +13,7 @@ export class AppsManager {
     register(microApp: MicroApp) {
         const microAppDef = AppsManager.generateMicroAppDef(microApp);
         const tempGraph = { ...this.microAppsGraph, [microAppDef.name]: microAppDef };
-        if (this.microAppsGraph[microAppDef.name] && this.microAppsGraph[microAppDef.name].status !== STATUS.NOTFOUND) {
+        if (this.isDefinedBefore(microAppDef.name)) {
             console.error(`[Conflict error]: "${microAppDef.name}" is defined before.`);
             return;
         }
@@ -38,6 +38,10 @@ export class AppsManager {
         this.updateMicroAppStatuses();
         this.runReadyMicroApps();
         this.dispatch();
+    }
+
+    isDefinedBefore(microAppName: string): boolean {
+        return this.microAppsGraph[microAppName] && this.microAppsGraph[microAppName].status !== STATUS.NOTFOUND;
     }
 
     subscribe(fn: (appList: MicroAppDef[]) => void) {

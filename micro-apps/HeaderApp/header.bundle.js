@@ -1,8 +1,13 @@
-const { MicroAppStore, container } = microAppArgs;
-const span = document.createElement('span');
-container.innerText = 'HEADER';
+const { MicroAppRouter, container } = microAppArgs;
+const header = document.createElement('H1');
+header.innerText = 'microfe';
+container.appendChild(header);
+const angularLink = document.createElement('a');
+angularLink.innerText = 'Angular App';
+angularLink.onclick = () => MicroAppRouter.navigate('/angular');
+container.appendChild(angularLink);
+const reactLink = document.createElement('a');
+reactLink.innerText = 'React App';
+reactLink.onclick = () => MicroAppRouter.navigate('/react');
+container.appendChild(reactLink);
 container.classList.add('header');
-container.appendChild(span);
-MicroAppStore.select('tick').subscribe(state => {
-    span.innerText = state;
-});

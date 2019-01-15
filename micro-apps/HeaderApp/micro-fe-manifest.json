@@ -6,6 +6,6 @@
   ],
   "version": "1.0.0",
   "dependencies": {
-    "MicroAppStore": "1.0.0"
+    "MicroAppRouter": "1.0.0"
   }
 }

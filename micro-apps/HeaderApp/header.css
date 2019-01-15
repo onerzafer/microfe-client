@@ -1,9 +1,35 @@
-.header {
-    position: absolute;
+:host {
+    position: fixed;
     width: 100vw;
     box-sizing: border-box;
-    padding: 32px;
     height: 80px;
-    background: #c0392b url("assets/hexagons.svg") repeat center;
-    color: #FFFFFF;
+    color: #ffffff;
+    background: #2c3e50;
+    font-family: sans-serif;
+    box-shadow: 0 0 4px 2px #7f8c8d;
+}
+
+.header {
+    height: 100%;
+    padding: 0 32px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+}
+
+a {
+    padding: 32px;
+    text-decoration: none;
+    color: currentColor;
+    cursor: pointer;
+}
+
+a:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+h1 {
+    padding: 0 32px;
+    margin: 0;
 }
