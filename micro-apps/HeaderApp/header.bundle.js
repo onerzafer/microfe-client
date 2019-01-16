@@ -1,22 +1,35 @@
 const { MicroAppRouter, container } = microAppArgs;
-const header = document.createElement('H1');
-const headerLink = document.createElement('a');
-headerLink.onclick = () => MicroAppRouter.navigate('/');
-headerLink.innerText = 'microfe';
-header.appendChild(headerLink);
-container.appendChild(header);
+
 const Links = {
     angularLink: document.createElement('a'),
     reactLink: document.createElement('a'),
+    staticLink: document.createElement('a'),
+    headerLink: document.createElement('a')
 };
+
+const header = document.createElement('H1');
+Links.headerLink.innerText = 'microfe';
+Links.headerLink.href = '/';
+Links.headerLink.onclick = (e) => { MicroAppRouter.navigate(Links.headerLink.href); e.preventDefault(); return false;};
+header.appendChild(Links.headerLink);
+container.appendChild(header);
+
+
 Links.angularLink.innerText = 'Angular App';
 Links.angularLink.href = '/angular';
 Links.angularLink.onclick = (e) => { MicroAppRouter.navigate(Links.angularLink.href); e.preventDefault(); return false;};
 container.appendChild(Links.angularLink);
+
 Links.reactLink.innerText = 'React App';
 Links.reactLink.href = '/react';
 Links.reactLink.onclick = (e) => { MicroAppRouter.navigate(Links.reactLink.href); e.preventDefault(); return false;};
 container.appendChild(Links.reactLink);
+
+Links.staticLink.innerText = 'Static App';
+Links.staticLink.href = '/static';
+Links.staticLink.onclick = (e) => { MicroAppRouter.navigate(Links.staticLink.href); e.preventDefault(); return false;};
+container.appendChild(Links.staticLink);
+
 container.classList.add('header');
 
 MicroAppRouter.onChange(() => {

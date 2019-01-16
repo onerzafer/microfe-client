@@ -15,7 +15,7 @@
                             const style = DOCUMENT.createElement('link');
                             style.type = 'text/css';
                             style.rel='stylesheet';
-                            const blob = new Blob([stylesAsText]);
+                            const blob = new Blob([stylesAsText], {type : 'text/css'});
                             style.href= URL.createObjectURL(blob);
                             URL.revokeObjectURL(blob);
                             shadow.appendChild(style);

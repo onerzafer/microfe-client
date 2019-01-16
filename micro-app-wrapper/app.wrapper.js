@@ -53,62 +53,74 @@ class MicroAppWrapper {
 
     async getMicroApp(appRootPath, containerId) {
         return await this.getManifest(`${appRootPath}/micro-fe-manifest.json`).then(manifest => {
-            const bundle = manifest.bundle || [];
-            const cssFilesPromises = bundle
-                .filter(({ type }) => type === 'css')
-                .map(({ path }) => `${appRootPath}/${path}`)
-                .map(path =>
-                    new Promise((resolve, reject) => this.readFile(path, resolve, reject))
-                        .then(file => MicroAppWrapper.sanitizeCss(containerId, file))
-                        .then(file => MicroAppWrapper.fixRelativePathsInCss(manifest.name, containerId, file))
-                );
-            const jsFilePromises = bundle
-                .filter(({ type }) => type === 'js')
-                .map(({ path }) => `${appRootPath}/${path}`)
-                .map(path => new Promise((resolve, reject) => this.readFile(path, resolve, reject)));
+            const { bundle = [], type = 'default', entry, name } = manifest;
+            if (type === 'static') {
+                return Promise.resolve(
+                    this.wrapTheApp({ ...manifest, type, containerId, entryPoint: `/micro-apps/${name}/${entry}` })
+                ).then(appWrappedContentAsText => ({
+                    name,
+                    file: appWrappedContentAsText,
+                }));
+            } else {
+                const cssFilesPromises = bundle
+                    .filter(({ type }) => type === 'css')
+                    .map(({ path }) => `${appRootPath}/${path}`)
+                    .map(path =>
+                        new Promise((resolve, reject) => this.readFile(path, resolve, reject))
+                            .then(file => MicroAppWrapper.sanitizeCss(containerId, file))
+                            .then(file => MicroAppWrapper.fixRelativePathsInCss(name, containerId, file))
+                    );
+                const jsFilePromises = bundle
+                    .filter(({ type }) => type === 'js')
+                    .map(({ path }) => `${appRootPath}/${path}`)
+                    .map(path => new Promise((resolve, reject) => this.readFile(path, resolve, reject)));
 
-            // get template and be sure there is only one template
-            // extract inline css and inject them on top of cssFilesPromises
-            // extract inline js and inject them on top of jsFilesPromises
-            // fetch 3rdy party css files and inject them on top of cssFilesPromises
-            // fetch 3rdy party js files and inject them on top of jsFilesPromises
-            // get only the content inside body area
-            // clean inline css, js
-            const templatePromise = Promise.all(bundle
-                .filter(({ type }) => type === 'html' || type === 'template')
-                .map(({ path }) => `${appRootPath}/${path}`)
-                .map(path =>
-                    new Promise((resolve, reject) => this.readFile(path, resolve, reject))
-                        .then(file => MicroAppWrapper.fixRelativePathsInTemplates(manifest.name, file))
-                        .then(file => MicroAppWrapper.cleanTemplates(file))
-                ));
-
-            return Promise.all(cssFilesPromises)
-                .then(files => files.join(' '))
-                .then(stylesAsText =>
-                    templatePromise.then(htmlTemplate =>
-                        Promise.all(jsFilePromises)
-                            .then(files =>
-                                files
-                                    .map(file => MicroAppWrapper.fixRelativePathsInJs(manifest.name, strip(file, {})))
-                                    .map(file => MicroAppWrapper.fixDocumentAccessJs(file))
-                            )
-                            .then(files => files.join(' ')) // concat js files
-                            .then(appContentAsText =>
-                                this.wrapTheApp({
-                                    appContentAsText,
-                                    ...manifest,
-                                    stylesAsText,
-                                    containerId,
-                                    htmlTemplate,
-                                })
-                            )
-                            .then(appWrappedContentAsText => ({
-                                name: manifest.name,
-                                file: appWrappedContentAsText,
-                            }))
-                    )
+                // get template and be sure there is only one template
+                // extract inline css and inject them on top of cssFilesPromises
+                // extract inline js and inject them on top of jsFilesPromises
+                // fetch 3rdy party css files and inject them on top of cssFilesPromises
+                // fetch 3rdy party js files and inject them on top of jsFilesPromises
+                // get only the content inside body area
+                // clean inline css, js
+                const templatePromise = Promise.all(
+                    bundle
+                        .filter(({ type }) => type === 'html' || type === 'template')
+                        .map(({ path }) => `${appRootPath}/${path}`)
+                        .map(path =>
+                            new Promise((resolve, reject) => this.readFile(path, resolve, reject))
+                                .then(file => MicroAppWrapper.fixRelativePathsInTemplates(name, file))
+                                .then(file => MicroAppWrapper.cleanTemplates(file))
+                        )
                 );
+
+                return Promise.all(cssFilesPromises)
+                    .then(files => files.join(' '))
+                    .then(stylesAsText =>
+                        templatePromise.then(htmlTemplate =>
+                            Promise.all(jsFilePromises)
+                                .then(files =>
+                                    files
+                                        .map(file => MicroAppWrapper.fixRelativePathsInJs(name, strip(file, {})))
+                                        .map(file => MicroAppWrapper.fixDocumentAccessJs(file))
+                                )
+                                .then(files => files.join(' ')) // concat js files
+                                .then(appContentAsText =>
+                                    this.wrapTheApp({
+                                        appContentAsText,
+                                        ...manifest,
+                                        stylesAsText,
+                                        containerId,
+                                        htmlTemplate,
+                                        type,
+                                    })
+                                )
+                                .then(appWrappedContentAsText => ({
+                                    name,
+                                    file: appWrappedContentAsText,
+                                }))
+                        )
+                    );
+            }
         });
     }
 
@@ -123,17 +135,16 @@ class MicroAppWrapper {
     }
 
     async wrapTheApp({
-        appContentAsText,
-        name,
-        dependencies,
-        nonBlockingDependencies,
-        stylesAsText = '',
         containerId,
-        htmlTemplate,
-        type = 'default',
+        appContentAsText = '',
+        name = '',
+        dependencies = {},
+        nonBlockingDependencies = {},
+        stylesAsText = '',
+        htmlTemplate = '',
+        entryPoint = '',
+        type,
     }) {
-        dependencies = dependencies || {};
-        nonBlockingDependencies = nonBlockingDependencies || {};
         const parsedDep = Object.keys(dependencies)
             .map(dep => "'" + dep + "'")
             .join(', ');
@@ -152,6 +163,7 @@ class MicroAppWrapper {
                     .replace(/__template__/g, htmlTemplate)
                     .replace(/__dependencies__/g, parsedDep)
                     .replace(/__nonBlockingDependencies__/g, parsedNonBlockingDeps)
+                    .replace(/__entryPoint__/g, entryPoint)
             )
             .then(temp => {
                 const tempParts = temp.split('__appContentAsText__');
@@ -165,10 +177,13 @@ class MicroAppWrapper {
 
     static templatePath(type) {
         switch (type) {
+            case 'webcomponent':
             case 'web component':
                 return 'web-component.wrapper.template.js';
             case 'service':
                 return 'service.wrapper.template.js';
+            case 'static':
+                return 'static.wrapper.template.js';
             default:
                 return 'app.wrapper.template.js';
         }
@@ -187,13 +202,11 @@ class MicroAppWrapper {
             .replace(/\.\.\//g, path)
             .replace(/\.\//g, path)
             .replace(relativePathPatternInQuoute, `${path}$&`)
-            .replace(relativePathPatternNoQuoute, `${path}$&`)
+            .replace(relativePathPatternNoQuoute, `${path}$&`);
     }
 
     static sanitizeCss(containerId, file) {
-        return file
-            .replace(/html|body/g, `#${containerId}`)
-            .replace(/\\/g, '\\\\')
+        return file.replace(/html|body/g, `#${containerId}`).replace(/\\/g, '\\\\');
     }
 
     static fixRelativePathsInJs(name, file) {
