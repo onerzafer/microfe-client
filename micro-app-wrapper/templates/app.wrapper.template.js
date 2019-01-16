@@ -12,14 +12,24 @@
                         super();
                         const shadow = this.attachShadow({ mode: 'open' });
                         if (stylesAsText && stylesAsText !== '') {
-                            const style = DOCUMENT.createElement('style');
-                            const styleTextNode = DOCUMENT.createTextNode(stylesAsText);
-                            style.appendChild(styleTextNode);
+                            const style = DOCUMENT.createElement('link');
+                            style.type = 'text/css';
+                            style.rel='stylesheet';
+                            const blob = new Blob([stylesAsText]);
+                            style.href= URL.createObjectURL(blob);
+                            URL.revokeObjectURL(blob);
                             shadow.appendChild(style);
                         }
+
                         const root = DOCUMENT.createElement('app-root');
                         root.id = '__container_id__';
                         shadow.appendChild(root);
+
+                        const templateEl = DOCUMENT.createElement('template');
+                        templateEl.innerHTML = `__template__`;
+                        templateEl.id = `template___container_id__`;
+                        shadow.appendChild(templateEl);
+                        root.appendChild(templateEl.content.cloneNode(true));
                     }
 
                     connectedCallback() {
@@ -27,7 +37,10 @@
                             delete window.webpackJsonp____name__;
                         }
                         const MICROAPP_CONTAINER = this.shadowRoot.getElementById('__container_id__');
+                        const SHADOWROOT = this.shadowRoot;
                         microAppArgs['container'] = MICROAPP_CONTAINER;
+                        microAppArgs['microAppId'] = '__container_id__';
+                        microAppArgs['microAppTemplateId'] = 'template___container_id__';
                         __appContentAsText__;
                     }
                 }

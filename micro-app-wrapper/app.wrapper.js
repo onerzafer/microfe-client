@@ -58,28 +58,57 @@ class MicroAppWrapper {
                 .filter(({ type }) => type === 'css')
                 .map(({ path }) => `${appRootPath}/${path}`)
                 .map(path =>
-                    this.getCssFile(path).then(file => MicroAppWrapper.fixRelativePathsInCss(manifest.name, containerId, file))
+                    new Promise((resolve, reject) => this.readFile(path, resolve, reject))
+                        .then(file => MicroAppWrapper.sanitizeCss(containerId, file))
+                        .then(file => MicroAppWrapper.fixRelativePathsInCss(manifest.name, containerId, file))
                 );
-            const cssPromise = Promise.all(cssFilesPromises)
-                //.then(files => files.map(file => strip(file)))
-                .then(files => files.join(' ')); // concat css files
             const jsFilePromises = bundle
                 .filter(({ type }) => type === 'js')
                 .map(({ path }) => `${appRootPath}/${path}`)
-                .map(path => this.getJsFile(path));
-            const jsPromise = cssPromise.then(stylesAsText =>
-                Promise.all(jsFilePromises)
-                    .then(files => files.map(file => MicroAppWrapper.fixRelativePathsInJs(manifest.name, strip(file))))
-                    .then(files => files.join(' ')) // concat js files
-                    .then(appContentAsText =>
-                        this.wrapTheApp({ appContentAsText, ...manifest, stylesAsText, containerId })
+                .map(path => new Promise((resolve, reject) => this.readFile(path, resolve, reject)));
+
+            // get template and be sure there is only one template
+            // extract inline css and inject them on top of cssFilesPromises
+            // extract inline js and inject them on top of jsFilesPromises
+            // fetch 3rdy party css files and inject them on top of cssFilesPromises
+            // fetch 3rdy party js files and inject them on top of jsFilesPromises
+            // get only the content inside body area
+            // clean inline css, js
+            const templatePromise = Promise.all(bundle
+                .filter(({ type }) => type === 'html' || type === 'template')
+                .map(({ path }) => `${appRootPath}/${path}`)
+                .map(path =>
+                    new Promise((resolve, reject) => this.readFile(path, resolve, reject))
+                        .then(file => MicroAppWrapper.fixRelativePathsInTemplates(manifest.name, file))
+                        .then(file => MicroAppWrapper.cleanTemplates(file))
+                ));
+
+            return Promise.all(cssFilesPromises)
+                .then(files => files.join(' '))
+                .then(stylesAsText =>
+                    templatePromise.then(htmlTemplate =>
+                        Promise.all(jsFilePromises)
+                            .then(files =>
+                                files
+                                    .map(file => MicroAppWrapper.fixRelativePathsInJs(manifest.name, strip(file, {})))
+                                    .map(file => MicroAppWrapper.fixDocumentAccessJs(file))
+                            )
+                            .then(files => files.join(' ')) // concat js files
+                            .then(appContentAsText =>
+                                this.wrapTheApp({
+                                    appContentAsText,
+                                    ...manifest,
+                                    stylesAsText,
+                                    containerId,
+                                    htmlTemplate,
+                                })
+                            )
+                            .then(appWrappedContentAsText => ({
+                                name: manifest.name,
+                                file: appWrappedContentAsText,
+                            }))
                     )
-                    .then(appWrappedContentAsText => ({
-                        name: manifest.name,
-                        file: appWrappedContentAsText,
-                    }))
-            );
-            return jsPromise;
+                );
         });
     }
 
@@ -87,14 +116,6 @@ class MicroAppWrapper {
         return await new Promise((resolve, reject) => this.readFile(path, resolve, reject)).then(file =>
             JSON.parse(file)
         );
-    }
-
-    async getJsFile(path) {
-        return await new Promise((resolve, reject) => this.readFile(path, resolve, reject));
-    }
-
-    async getCssFile(path) {
-        return await new Promise((resolve, reject) => this.readFile(path, resolve, reject));
     }
 
     readFile(path, resolve, reject) {
@@ -108,6 +129,7 @@ class MicroAppWrapper {
         nonBlockingDependencies,
         stylesAsText = '',
         containerId,
+        htmlTemplate,
         type = 'default',
     }) {
         dependencies = dependencies || {};
@@ -127,6 +149,7 @@ class MicroAppWrapper {
                     .replace(/__container_id__/g, containerId)
                     .replace(/__name__/g, name)
                     .replace(/__stylesAsText__/g, stylesAsText)
+                    .replace(/__template__/g, htmlTemplate)
                     .replace(/__dependencies__/g, parsedDep)
                     .replace(/__nonBlockingDependencies__/g, parsedNonBlockingDeps)
             )
@@ -152,18 +175,51 @@ class MicroAppWrapper {
     }
 
     static fixRelativePathsInCss(name, containerId, file) {
-        const path = `micro-apps/${name}/`;
-        const relativePathPatternInQuoute = /(?<=\(")((?!data:image)(?!http).)*?(?="\))/g;
+        const path = `/micro-apps/${name}/`;
+        const relativePathPatternInQuoute = /(?<=\(")((?!data:image)(?!http)(?!micro-apps).)*?(?="\))/g;
         const relativePathPatternNoQuoute = /(?<=url\()((?!data:image)(?!http)(?!micro-apps).)*?(?=\))/g;
         return file
+            .replace(/\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/\.\.\//g, path)
+            .replace(/\.\.\/\.\.\/\.\.\/\.\.\/\.\.\//g, path)
+            .replace(/\.\.\/\.\.\/\.\.\/\.\.\//g, path)
+            .replace(/\.\.\/\.\.\/\.\.\//g, path)
+            .replace(/\.\.\/\.\.\//g, path)
+            .replace(/\.\.\//g, path)
+            .replace(/\.\//g, path)
             .replace(relativePathPatternInQuoute, `${path}$&`)
             .replace(relativePathPatternNoQuoute, `${path}$&`)
-            .replace(/html|body/g, `#${containerId}`);
+    }
+
+    static sanitizeCss(containerId, file) {
+        return file
+            .replace(/html|body/g, `#${containerId}`)
+            .replace(/\\/g, '\\\\')
     }
 
     static fixRelativePathsInJs(name, file) {
         const path = `micro-apps/${name}/`;
-        return file.replace(/((?<=(["']))[\.\/a-zA-Z1-9]*?)(\.((sv|pn)g)|(jpe?g)|(gif))(?=\2)/g, `${path}$&`);
+        return file.replace(/((?<=(["']))[.\/a-zA-Z0-9\-_]*?)(\.((sv|pn)g)|(jpe?g)|(gif))(?=\2)/g, `${path}$&`);
+    }
+
+    static fixDocumentAccessJs(file) {
+        return file.replace(/document.get/g, 'SHADOWROOT.get');
+    }
+
+    static fixRelativePathsInTemplates(name, file) {
+        const path = `micro-apps/${name}/`;
+        return file
+            .replace(/(?<=src=")[.\/a-zA-Z0-9\-_]*?(?=")/gi, `${path}$&`)
+            .replace(/(?<=href=")[.\/a-zA-Z0-9\-_]*?(?=")"/gi, `${path}$&`);
+    }
+
+    static cleanTemplates(file) {
+        return file
+            .replace(/<!--.*-->/gi, '')
+            .replace(/<script.*src="(?!http).*\/script>/gi, '')
+            .replace(/<script.*src="(?!http).*\/>/gi, '')
+            .replace(/<link.*href="(?!http).*\/link>/gi, '')
+            .replace(/<link.*href="(?!http).*\/>/gi, '')
+            .replace(/<link.*href="(?!http).*>/gi, '');
     }
 }
 
