@@ -19,5 +19,8 @@ MicroAppInitInfrastructure(
         { path: '/static', microApp: 'htmlApp', tagName: 'html-app' },
         { path: '*', microApp: 'NotFoundApp', tagName: 'not-found-app' },
     ],
-    { registryApi: 'http://localhost:9000' }
+    {
+        registryApi: 'http://localhost:3000/registry',
+        registryPublic: 'http://localhost:3000',
+    }
 );

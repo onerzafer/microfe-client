@@ -110,7 +110,7 @@ export class AppsManager {
                     this.microAppsGraph[microAppName].status === STATUS.READY && this.microAppsGraph[microAppName].app
             )
             .forEach(microAppName => {
-                const deps = this.provideDepsInstances(this.microAppsGraph[microAppName].deps);
+                const deps = this.provideDepsInstances(microAppName, this.microAppsGraph[microAppName].deps);
                 this.instanceCache[microAppName] = this.microAppsGraph[microAppName].app.initialize(deps);
                 this.microAppsGraph[microAppName].status = STATUS.RUNNING;
                 hasSomethingRun = true;
@@ -135,7 +135,7 @@ export class AppsManager {
         }
     }
 
-    private provideDepsInstances(deps: string[]): { [key: string]: any } {
+    private provideDepsInstances(microAppName: string, deps: string[]): { [key: string]: any } {
         return deps.reduce(
             (cumulative, current) => {
                 return {
@@ -143,8 +143,14 @@ export class AppsManager {
                     [current]: this.instanceCache[current],
                 };
             },
-            { AppsManager: this }
+            { AppsManager: this, PATH: this.generateAppScopedPath(microAppName) }
         );
+    }
+
+    private generateAppScopedPath(microAppName: string): string {
+        return this.instanceCache.Config && this.instanceCache.Config.registryPublic
+            ? `${this.instanceCache.Config.registryPublic}/${microAppName}`
+            : '';
     }
 
     static generateMicroAppDef(microApp: MicroApp): MicroAppDef {

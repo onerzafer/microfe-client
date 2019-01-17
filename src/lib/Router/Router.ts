@@ -4,7 +4,7 @@ export class Router {
     private oldRoute: ResolvedRoute;
     private onChangeHandlers: Array<(oldPath: string, newPath: string) => void> = [];
 
-    constructor(private routes: Route[]) {
+    constructor(private routes: Array<Route>) {
         window.onpopstate = () => {
             this.navigate(window.location.pathname);
         };
