@@ -1,24 +1,8 @@
-# MICRO FE
-A naive micro frontend infrastructure. This project intends to provide necessary tooling 
-to achieve independent apps loaded separately and run on different parts on single web page.
+# *microfe*
+*(microfe - short for micro frontends)*
+A naive infrastructure/metaframework implementation for micro frontends. This project intends to provide necessary tooling to achieve independent apps loaded separately and run on different parts on single web page in complete isolaton.
 For detailed information on the topic can be found [micro-frontends.org](https://micro-frontends.org/)
-This repository will conduct some experiments to achieve the goal. The experiments has following
-goals;
- * isolate completely different apps developed completely different tech stacks.
- * create an asynchronous dependency injection for inter micro app dependencies.
- * isolate css
- * provide a way for loading assets from css or from html
- * create a structure for consumable micro apps
 ## Motivation
-When developing micro services there a re lots of tools and libraries to helps developers
-to focus the effort on the architecture instead of details. Since micro frontend idea is
-for now premature and it needs time to grow. My intention is to contribute to this discussion.
-And also provide necessary tooling and a sample architecture for developers. The ultimate 
-goal is making the developers and the companies life easier who are willing to adapt this
-architecture.
-## Requirements
-When you clone or download the project to your local, run following code to start the app
-````bash
-npm install
-npm start
-````
+When developing micro services there are lots of tools and libraries to help developers to focus the effort on the things needs to be done instead of fighting against monolithic monster. For now, "micro frontends" idea is still premature and it needs time to grow somethig easy to use. My intention is to contribute to this discussion and also provide necessary tooling and a sample architecture for developers who would like to give it a try. Providing an easy to use infrastructure for individuals and companies can be considered as ultimate goal.
+## Who will/may/can use *microfe*?
+Ideally *microfe* is not suitable for small teams and for them trying to use it would not be necessary. For this kind of teams refactoing their monolitich fe apps would be more productive instead of using *microfe* to devide a relatively big app into smaller piecies and trying to maintain each piece. If the project contains at least two independent team which are responsible from same monolithic app then *microfe* can be beneficial. Because *microfe* gives the opportunity of working on undependent tech stack by each team. It can provide isolation and managed communication channels to micro apps.
