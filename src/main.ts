@@ -10,4 +10,17 @@ const MainApp: MicroApp = {
 };
 
 // INITIALIZE
-MicroAppInitInfrastructure(MainApp, { registryApi: 'http://localhost:9000' });
+MicroAppInitInfrastructure(
+    MainApp,
+    [
+        { path: '/', redirectTo: '/angular' },
+        { path: '/angular', microApp: 'demoAngular', tagName: 'demo-angular' },
+        { path: '/react', microApp: 'reactDemo', tagName: 'react-demo' },
+        { path: '/static', microApp: 'htmlApp', tagName: 'html-app' },
+        { path: '*', microApp: 'NotFoundApp', tagName: 'not-found-app' },
+    ],
+    {
+        registryApi: 'http://localhost:3000/registry',
+        registryPublic: 'http://localhost:3000',
+    }
+);

@@ -1,7 +1,0 @@
-.content-container {
-    box-sizing: border-box;
-    width: 100vw;
-    min-height: calc(100vh - 80px);
-    background: #ecf0f1;
-    color: #2c3e50;
-}

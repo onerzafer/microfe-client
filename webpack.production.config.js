@@ -8,12 +8,7 @@ module.exports = {
     output: {
         pathinfo: false,
     },
-    mode: 'development',
-    optimization: {
-        removeAvailableModules: false,
-        removeEmptyChunks: false,
-        splitChunks: false,
-    },
+    mode: 'production',
     module: {
         rules: [
             {
@@ -22,8 +17,7 @@ module.exports = {
                     {
                         loader: 'ts-loader',
                         options: {
-                            transpileOnly: true,
-                            experimentalWatchApi: true,
+                            transpileOnly: false,
                         },
                     },
                 ],

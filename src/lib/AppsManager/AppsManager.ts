@@ -13,7 +13,7 @@ export class AppsManager {
     register(microApp: MicroApp) {
         const microAppDef = AppsManager.generateMicroAppDef(microApp);
         const tempGraph = { ...this.microAppsGraph, [microAppDef.name]: microAppDef };
-        if (this.microAppsGraph[microAppDef.name] && this.microAppsGraph[microAppDef.name].status !== STATUS.NOTFOUND) {
+        if (this.isDefinedBefore(microAppDef.name)) {
             console.error(`[Conflict error]: "${microAppDef.name}" is defined before.`);
             return;
         }
@@ -38,6 +38,10 @@ export class AppsManager {
         this.updateMicroAppStatuses();
         this.runReadyMicroApps();
         this.dispatch();
+    }
+
+    isDefinedBefore(microAppName: string): boolean {
+        return this.microAppsGraph[microAppName] && this.microAppsGraph[microAppName].status !== STATUS.NOTFOUND;
     }
 
     subscribe(fn: (appList: MicroAppDef[]) => void) {
@@ -106,7 +110,7 @@ export class AppsManager {
                     this.microAppsGraph[microAppName].status === STATUS.READY && this.microAppsGraph[microAppName].app
             )
             .forEach(microAppName => {
-                const deps = this.provideDepsInstances(this.microAppsGraph[microAppName].deps);
+                const deps = this.provideDepsInstances(microAppName, this.microAppsGraph[microAppName].deps);
                 this.instanceCache[microAppName] = this.microAppsGraph[microAppName].app.initialize(deps);
                 this.microAppsGraph[microAppName].status = STATUS.RUNNING;
                 hasSomethingRun = true;
@@ -131,7 +135,7 @@ export class AppsManager {
         }
     }
 
-    private provideDepsInstances(deps: string[]): { [key: string]: any } {
+    private provideDepsInstances(microAppName: string, deps: string[]): { [key: string]: any } {
         return deps.reduce(
             (cumulative, current) => {
                 return {
@@ -139,8 +143,14 @@ export class AppsManager {
                     [current]: this.instanceCache[current],
                 };
             },
-            { AppsManager: this }
+            { AppsManager: this, PATH: this.generateAppScopedPath(microAppName) }
         );
+    }
+
+    private generateAppScopedPath(microAppName: string): string {
+        return this.instanceCache.Config && this.instanceCache.Config.registryPublic
+            ? `${this.instanceCache.Config.registryPublic}/${microAppName}`
+            : '';
     }
 
     static generateMicroAppDef(microApp: MicroApp): MicroAppDef {
