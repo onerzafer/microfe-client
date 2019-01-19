@@ -11,14 +11,8 @@ export class Loader {
         appsManager.subscribe(this.onNotFoundApp.bind(this));
     }
 
-    onNotFoundApp(appList: { blocking: MicroAppDef[]; nonBlocking: MicroAppDef[] }) {
-        appList.blocking.forEach(({ name }) => {
-            if (this.loadingList.indexOf(name) === -1) {
-                this.loadingList.push(name);
-                this.fetchMicroApp(name);
-            }
-        });
-        appList.nonBlocking.forEach(({ name }) => {
+    onNotFoundApp(appList: MicroAppDef[]) {
+        appList.forEach(({ name }) => {
             if (this.loadingList.indexOf(name) === -1) {
                 this.loadingList.push(name);
                 this.fetchMicroApp(name);

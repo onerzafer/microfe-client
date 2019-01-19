@@ -29,12 +29,6 @@ export class AppsManager {
                 this.addMicroAppToGraph(AppsManager.generatePlaceholderMicroAppDef(microAppName));
             }
         });
-        microAppDef.nonBlockingDeps.forEach(microAppName => {
-            const dep = this.microAppsGraph[microAppName];
-            if (!dep) {
-                this.addMicroAppToGraph(AppsManager.generateNonBlockingPlaceholderMicroAppDef(microAppName));
-            }
-        });
         this.updateMicroAppStatuses();
         this.runReadyMicroApps();
         this.dispatch();
@@ -51,12 +45,8 @@ export class AppsManager {
     dispatch() {
         const appList = Object.keys(this.microAppsGraph).map(microAppName => this.microAppsGraph[microAppName]);
         const notFoundList = appList.filter(microApp => microApp.status === STATUS.NOTFOUND);
-        const nonBlockingList = appList.filter(microApp => microApp.status === STATUS.NON_BLOCKING);
-        if (notFoundList.length === 0 && nonBlockingList.length === 0) {
-            return;
-        }
         this.subscriptions.forEach(fn => {
-            fn.call(null, { blocking: notFoundList, nonBlocking: nonBlockingList });
+            fn.call(null, notFoundList);
         });
     }
 
@@ -158,7 +148,6 @@ export class AppsManager {
             name: microApp.name,
             status: microApp.deps ? STATUS.WAITING : STATUS.READY,
             deps: microApp.deps ? [...microApp.deps] : [],
-            nonBlockingDeps: microApp.deps ? [...microApp.deps] : [],
             app: microApp,
         };
     }
@@ -167,15 +156,6 @@ export class AppsManager {
         return {
             name,
             status: STATUS.NOTFOUND,
-            deps: [],
-            app: undefined,
-        };
-    }
-
-    static generateNonBlockingPlaceholderMicroAppDef(name: string): MicroAppDef {
-        return {
-            name,
-            status: STATUS.NON_BLOCKING,
             deps: [],
             app: undefined,
         };

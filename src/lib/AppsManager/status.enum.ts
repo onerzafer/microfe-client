@@ -3,5 +3,4 @@ export enum STATUS {
     WAITING = 1,
     READY = 2,
     RUNNING = 3,
-    NON_BLOCKING = 4,
 }
