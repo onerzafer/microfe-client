@@ -4,7 +4,7 @@
   "description": "A naive micro frontend solution",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server  --progress --open",
+    "start": "webpack-dev-server  --progress --open --history-api-fallback",
     "build": "webpack --config webpack.production.config.js --mode production",
     "test": "karma start karma.config.js"
   },
