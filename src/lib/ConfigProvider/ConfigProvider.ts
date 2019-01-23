@@ -1,10 +1,7 @@
-import { MicroApp } from '../AppsManager/AppsManager.interface';
+import { MicroApp } from '..';
+import { ConfigInterface } from './Config.interface';
 
-export const ConfigProvider: (config: { [key: string]: any }) => MicroApp = (config = {}) => ({
+export const ConfigProvider: (config: ConfigInterface) => MicroApp = config => ({
     name: 'Config',
-    initialize: () => ({
-        registryApi: '/micro-apps',
-        registryPublic: '/micro-apps',
-        ...config,
-    }),
+    initialize: () => config,
 });

@@ -10,7 +10,7 @@ export class AppsManager {
         window['AppsManager'] = this;
     }
 
-    register(microApp: MicroApp) {
+    register(microApp: MicroApp | any) {
         const microAppDef = AppsManager.generateMicroAppDef(microApp);
         const tempGraph = { ...this.microAppsGraph, [microAppDef.name]: microAppDef };
         if (this.isDefinedBefore(microAppDef.name)) {

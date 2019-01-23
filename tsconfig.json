@@ -4,6 +4,7 @@
         "typeRoots": ["node_modules/@types"],
         "lib": ["es2017", "dom"],
         "target": "es6",
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "experimentalDecorators": true
     }
 }

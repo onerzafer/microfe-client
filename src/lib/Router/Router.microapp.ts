@@ -1,13 +1,12 @@
-import { MicroApp } from '../AppsManager/AppsManager.interface';
+import { MicroApp } from '..';
 import { Router } from './Router';
 import { Loader } from '../Loader/Loader';
-import { AppsManager } from '../AppsManager/AppsManager';
 import { ResolvedRoute, Route } from './Router.interface';
 
 export const MicroAppRouter: (routes: Route[]) => MicroApp = routes => ({
     name: 'MicroAppRouter',
     deps: ['Loader'],
-    initialize: ({ Loader }: { Loader: Loader; AppsManager: AppsManager }) => {
+    initialize: ({ Loader }: { Loader: Loader }) => {
         const router = new Router(routes);
         class RouterOutlet extends HTMLElement {
             router: Router = router;

@@ -1,8 +1,11 @@
 import { STATUS } from './status.enum';
 
-export interface MicroApp {
-    name: string;
+export interface MicroAppMeta {
     deps?: string[];
+}
+
+export interface MicroApp extends MicroAppMeta {
+    name: string;
     initialize: (...deps) => void;
 }
 

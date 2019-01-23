@@ -1,14 +1,20 @@
 import { AppsManager } from '../AppsManager/AppsManager';
-import { MicroAppDef } from '../AppsManager/AppsManager.interface';
 import { TAG, TAG_TYPE } from '../AppsManager/tag.enum';
+import { Microfe } from '../Decorators/Microfe.decorator';
+import { MicroAppDef } from '../AppsManager/AppsManager.interface';
+import { ConfigInterface } from '../ConfigProvider/Config.interface';
 
+@Microfe({
+    deps: ['Config']
+})
 export class Loader {
     private loadingList: string[] = [];
     private readonly apiUrl: string = '';
-
-    constructor(private appsManager: AppsManager, private config: { [key: string]: any }) {
-        this.apiUrl = (config && config.registryApi) || '';
-        appsManager.subscribe(this.onNotFoundApp.bind(this));
+    private appsManager: AppsManager;
+    constructor({AppsManager, Config}: {AppsManager: AppsManager, Config: ConfigInterface}) {
+        this.apiUrl = (Config && Config.registryApi) || '';
+        this.appsManager = AppsManager;
+        this.appsManager.subscribe(this.onNotFoundApp.bind(this));
     }
 
     onNotFoundApp(appList: MicroAppDef[]) {
