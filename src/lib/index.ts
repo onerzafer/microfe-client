@@ -1,5 +1,9 @@
+// PUBLIC INTERFACES
+export * from './Interfaces/AppsManager.interface';
+export * from './Interfaces/Router.interface';
+export * from './Interfaces/Config.interface';
+
+// PUBLIC API
 export * from './Bootstrapper/bootstrapper';
 export * from './Decorators/Microfe.decorator';
-export * from './AppsManager/AppsManager.interface';
-export * from './Router/Router.interface';
-export * from './ConfigProvider/Config.interface';
+export * from './Provider/Provider';

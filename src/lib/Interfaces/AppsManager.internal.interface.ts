@@ -1,4 +1,4 @@
-import { STATUS } from './status.enum';
+import { STATUS } from '../AppsManager/status.enum';
 import { MicroAppProvider } from './AppsManager.interface';
 
 export interface MicroAppDef {

@@ -1,19 +1,18 @@
-import { MicroAppProvider } from '..';
-import { Router } from './Router';
 import { Loader } from '../Loader/Loader';
-import { ResolvedRoute, Route } from './Router.interface';
+import { MicroAppRouter } from './Router';
+import { ResolvedRoute } from '../Interfaces/Router.interface';
+import { Microfe } from '../Decorators/Microfe.decorator';
 
-export const MicroAppRouter: (routes: Route[]) => MicroAppProvider = routes => ({
-    name: 'MicroAppRouter',
-    deps: ['Loader'],
-    initialize: ({ Loader }: { Loader: Loader }) => {
-        const router = new Router(routes);
-        class RouterOutlet extends HTMLElement {
-            router: Router = router;
+@Microfe({
+    deps: ['Loader', 'MicroAppRouter'],
+})
+export class RouterOutlet {
+    constructor({ Loader, MicroAppRouter }: { Loader: Loader; MicroAppRouter: MicroAppRouter }) {
+        class RouterOutletElement extends HTMLElement {
             shadow = this.attachShadow({ mode: 'open' });
             constructor() {
                 super();
-                this.router.onChange((oldPath, newPath, resolvedRoute) =>
+                MicroAppRouter.onChange((oldPath, newPath, resolvedRoute) =>
                     this.handlePath(oldPath, newPath, resolvedRoute)
                 );
             }
@@ -29,7 +28,6 @@ export const MicroAppRouter: (routes: Route[]) => MicroAppProvider = routes => (
                 }
             }
         }
-        customElements.define('micro-router', RouterOutlet);
-        return router;
-    },
-});
+        customElements.define('micro-router', RouterOutletElement);
+    }
+}

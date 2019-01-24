@@ -1,10 +1,16 @@
-import { ResolvedRoute, Route } from './Router.interface';
+import { ResolvedRoute, Route } from '../Interfaces/Router.interface';
+import { Microfe } from '../Decorators/Microfe.decorator';
 
-export class Router {
+@Microfe({
+    deps: ['Routes']
+})
+export class MicroAppRouter {
     private oldRoute: ResolvedRoute;
     private onChangeHandlers: Array<(oldPath: string, newPath: string) => void> = [];
+    private routes: Array<Route>;
 
-    constructor(private routes: Array<Route>) {
+    constructor({Routes}: {Routes: Array<Route>}) {
+        this.routes = Routes;
         window.onpopstate = () => {
             this.navigate(window.location.pathname);
         };

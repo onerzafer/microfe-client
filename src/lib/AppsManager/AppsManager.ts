@@ -1,6 +1,6 @@
 import { STATUS } from './status.enum';
-import { MicroAppProvider } from './AppsManager.interface';
-import { AnyObj, BoolObj, MicroAppDef, MicroAppsGraph } from './AppsManager.internal.interface';
+import { MicroAppProvider } from '../Interfaces/AppsManager.interface';
+import { AnyObj, BoolObj, MicroAppDef, MicroAppsGraph } from '../Interfaces/AppsManager.internal.interface';
 
 export class AppsManager {
     private microAppsGraph: MicroAppsGraph = {};
