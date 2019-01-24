@@ -1,9 +1,9 @@
-import { MicroApp } from '..';
+import { MicroAppProvider } from '..';
 import { Router } from './Router';
 import { Loader } from '../Loader/Loader';
 import { ResolvedRoute, Route } from './Router.interface';
 
-export const MicroAppRouter: (routes: Route[]) => MicroApp = routes => ({
+export const MicroAppRouter: (routes: Route[]) => MicroAppProvider = routes => ({
     name: 'MicroAppRouter',
     deps: ['Loader'],
     initialize: ({ Loader }: { Loader: Loader }) => {

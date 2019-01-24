@@ -1,9 +1,9 @@
 import { AppsManager } from '../AppsManager/AppsManager';
-import { MicroAppStore } from '../Store/Store.microapp';
 import { MicroAppRouter } from '../Router/Router.microapp';
 import { ConfigProvider } from '../ConfigProvider/ConfigProvider';
 import { Route } from '..';
 import { Loader } from '../Loader/Loader';
+import { MicroAppStore } from '../Store/MicroAppStore';
 
 export const Bootstrap = (
     routes?: Route[],

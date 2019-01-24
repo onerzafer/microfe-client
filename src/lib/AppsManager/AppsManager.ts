@@ -1,5 +1,6 @@
 import { STATUS } from './status.enum';
-import { AnyObj, BoolObj, MicroApp, MicroAppDef, MicroAppsGraph } from './AppsManager.interface';
+import { MicroAppProvider } from './AppsManager.interface';
+import { AnyObj, BoolObj, MicroAppDef, MicroAppsGraph } from './AppsManager.internal.interface';
 
 export class AppsManager {
     private microAppsGraph: MicroAppsGraph = {};
@@ -10,7 +11,7 @@ export class AppsManager {
         window['AppsManager'] = this;
     }
 
-    register(microApp: MicroApp | any) {
+    register(microApp: MicroAppProvider | any) {
         const microAppDef = AppsManager.generateMicroAppDef(microApp);
         const tempGraph = { ...this.microAppsGraph, [microAppDef.name]: microAppDef };
         if (this.isDefinedBefore(microAppDef.name)) {
@@ -143,7 +144,7 @@ export class AppsManager {
             : '';
     }
 
-    static generateMicroAppDef(microApp: MicroApp): MicroAppDef {
+    static generateMicroAppDef(microApp: MicroAppProvider): MicroAppDef {
         return {
             name: microApp.name,
             status: microApp.deps ? STATUS.WAITING : STATUS.READY,

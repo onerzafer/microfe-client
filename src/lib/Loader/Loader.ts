@@ -1,7 +1,7 @@
 import { AppsManager } from '../AppsManager/AppsManager';
 import { TAG, TAG_TYPE } from '../AppsManager/tag.enum';
 import { Microfe } from '../Decorators/Microfe.decorator';
-import { MicroAppDef } from '../AppsManager/AppsManager.interface';
+import { MicroAppDef } from '../AppsManager/AppsManager.internal.interface';
 import { ConfigInterface } from '../ConfigProvider/Config.interface';
 
 @Microfe({
