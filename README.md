@@ -23,12 +23,12 @@ Similar to microservices, the micro frontends provides the opportunity to isolat
 To run the microfe locally you need to clone and run [micro-fe-registry](https://github.com/onerzafer/micro-fe-registry). The documentation for micro-fe-registry can be found under its own repository.
 
 ## Usage
-Currently there is no npm package provided and the usage is not recommended at this phase. Yet if you are willing to experiment by yourself clone both repositories. For micro-fe-registry part follow the instructions on its own repository. Then execute following commands
+Currently, there is no npm package provided and the usage is not recommended at this phase. Yet if you are willing to experiment by yourself clone both repositories. For micro-fe-registry part follow the instructions on its own repository. Then execute following commands
 ```bash
 npm install
 npm start
 ```
-This command will open your prowser on http://localhost:8080 and you will be able to see the page is running.
+This command will open your browser on http://localhost:8080 and you will be able to see the page is running.
 
 If you see just blank page be sure your micro-fe-registry installation is up and running. And if it is running already please check if the requested micro-apps are available on the registry folder with requested names. If you have still problems of running please open an issue I will be happy to help you.
 
@@ -81,7 +81,7 @@ const Loader {
 }
 ```
 ### Router
-Unlike the common routers the mmicrofe router has a limited functionality. It is capable of solving the first part of the declared URLs. This implementation assumes the rest of the URL will be resolved by the responsible micro-app. If Router can resolve the URL from the browser location it triggers the Loader.fetchMicroApp function with the name of resolved micro-app. So it has two dependencies routes and Loader.
+Unlike the common routers, the microfe router has limited functionality. It is capable of solving the first part of the declared URLs. This implementation assumes the rest of the URL will be resolved by the responsible micro-app. If the Router can resolve the URL from the browser location it triggers the Loader.fetchMicroApp function with the name of resolved micro-app. So it has two dependencies routes and Loader.
 #### Route
 The routes object is an array of the Route objects which has the following interface:
 ```TypeScript
@@ -93,12 +93,12 @@ interface Route {
 }
 ```
 #### micro-router the Router outlet
-When Router instantiates it register a web component called micro-router. This is the expected place for all other micro-apps load on route hit. The usage is pretty simple and available for all micro-apps living on the client at the momment.
+When Router instantiates it register a web component called micro-router. This is the expected place for all other micro-apps loads on route hit. The usage is pretty simple and available for all micro-apps living on the client at the moment.
 ```html
 <micro-router></micro-router>
 ```
-Corrently it has no targetting of sub routes. Which means all of the micro-router tags will display the same target micro-app. So current recommendations is using only one micro-router the page. In the feture some sub routes can be targetted to some named micro-router tags.
+Currently, it has no targetting of sub-routes. Which means all of the micro-router tags will display the same target micro-app. So current recommendations are using only one micro-router the page. In the future, some sub-routes can be targetted to some named micro-router tags.
 ### Store
-Whith the assumtion of only big teams and big code bases will need the microfe and nearly all of the already managing app state, microfe library provides a global shared inter app state. this state can be used as shared event bus or shared global state. By nature this store is reactive and powered by RxJS. Yet it still has the similar functionalities of Redux library.
+With the assumption of only big teams and big code bases will need the microfe and nearly all of the already managing app state, the microfe library provides a global shared inter-app state. this state can be used as a shared event bus or shared global state. By nature, this store is reactive and powered by RxJS. Yet it still has the similar functionalities of Redux library.
 # License
 [MIT](https://choosealicense.com/licenses/mit/)
