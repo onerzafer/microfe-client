@@ -21,11 +21,15 @@ Similar to micro services, the micro frontends provides the opportunity to isola
 ## Top level arhitechture
 ## Definition of a microfe app
 A microfe app should implement following interface
-```javascript
+```TypeScript
 interface Microfe {
     name: string;
     deps?: string[];
-    initialize: (args: {AppsManager: AppsManager; Config: ConfigInterface; [key: string]: any}) => any | void
+    initialize: (args: {
+        AppsManager: AppsManager;
+        Config: ConfigInterface;
+        [key: string]: any
+    }) => any | void
 }
 ```
 **initialize** function may return the instance of the app
