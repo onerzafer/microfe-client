@@ -17,7 +17,14 @@ export class Loader {
         this.appsManager.subscribe(this.onNotFoundApp.bind(this));
     }
 
-    onNotFoundApp(appList: MicroAppDef[]) {
+    fetchMicroApp(microAppName: string) {
+        if (!this.appsManager.isDefinedBefore(microAppName)) {
+            const id = `${microAppName}_js_${new Date().getTime()}`;
+            Loader.injectJsToHead(id, `${this.apiUrl}/${microAppName}.js`);
+        }
+    }
+
+    private onNotFoundApp(appList: MicroAppDef[]) {
         appList.forEach(({ name }) => {
             if (this.loadingList.indexOf(name) === -1) {
                 this.loadingList.push(name);
@@ -26,14 +33,7 @@ export class Loader {
         });
     }
 
-    fetchMicroApp(microAppName: string) {
-        if (!this.appsManager.isDefinedBefore(microAppName)) {
-            const id = `${microAppName}_js_${new Date().getTime()}`;
-            Loader.injectJsToHead(id, `${this.apiUrl}/${microAppName}.js`);
-        }
-    }
-
-    static injectJsToHead(id: string, appUrl: string) {
+    private static injectJsToHead(id: string, appUrl: string) {
         const script = document.createElement(TAG.script) as HTMLScriptElement;
         script.id = id;
         script.type = TAG_TYPE.script;
