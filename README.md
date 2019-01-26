@@ -12,10 +12,20 @@ While companies growing they usually move from one tem to two or more and they s
 
 Similar to micro services, the micro frontends provides the opportunity to isolate code bases and make the teams free to use any code standards and tech stack and focus on relatively small parts of the application.
 ## Goals
-* Isolated apps
-* Independent apps
+* Isolated and Independent apps
 * A way to have a unified UI
-* inter app communication (i.e. authentication)
+* Inter-app communication (i.e. authentication)
 * Easy to maintain apps
 * Not to break already available build environments for major frameworks (React, Angular, Vue)
-* Reusable apps
+* Freedom of tech stack choise
+## Top level arhitechture
+## Definition of a microfe app
+A microfe app should implement following interface
+```javascript
+interface Microfe {
+    name: string;
+    deps?: string[];
+    initialize: (args: {AppsManager: AppsManager; Config: ConfigInterface; [key: string]: any}) => any | void
+}
+```
+**initialize** function may return the instance of the app
