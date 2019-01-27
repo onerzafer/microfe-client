@@ -100,5 +100,39 @@ When Router instantiates it register a web component called micro-router. This i
 Currently, it has no targetting of sub-routes. Which means all of the micro-router tags will display the same target micro-app. So current recommendations are using only one micro-router the page. In the future, some sub-routes can be targetted to some named micro-router tags.
 ### Store
 With the assumption of only big teams and big code bases will need the microfe and nearly all of the already managing app state, the microfe library provides a global shared inter-app state. this state can be used as a shared event bus or shared global state. By nature, this store is reactive and powered by RxJS. Yet it still has the similar functionalities of Redux library.
+```TypeScript
+interface Action {
+    type: string;
+    [key: string]: any;
+}
+
+interface State {
+    [key: string]: any;
+}
+
+interface Reducer {
+    (action: Action, state: State) => State) => void;
+}
+
+interface ReducerTreePiece {
+    [key: string]: Reducer | ReducerTreePiece
+}
+
+interface MicroAppStore {
+    addReducer: (reducerTreePiece: ReducerTreePiece) => void;
+    dispatch: (action: Action) => void;
+    select: (selector: string) => Observable<State>;
+}
+```
+The main issue with the MicroAppStore is the reducers may arrive on different times. The select function is pretty useful on this case. Because if the selected reducer is not available it sibly emits undefined and when the reducer arrives it emmits to all subscribers the related state.
+```TypeScript
+const Todos$ = MicroAppsStore.select('todos');
+Todos$.subscribe(todos => console.log(todos)); // immediatelly logs undefined
+const todosReducer = (state = [], action: Action) => {
+    return state;
+}
+MicroAppsStore.addReducer({todos: todoRecucer});
+// At this point Todos$.subscribe will receive [] as todos and will log []
+```
 # License
 [MIT](https://choosealicense.com/licenses/mit/)
