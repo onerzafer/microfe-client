@@ -126,6 +126,14 @@ When Router instantiates it register a web component called micro-router. This i
 <micro-router></micro-router>
 ```
 Currently, it has no targetting of sub-routes. Which means all of the micro-router tags will display the same target micro-app. So current recommendations are using only one micro-router the page. In the future, some sub-routes can be targetted to some named micro-router tags.
+#### micro-link
+Router also provides a simple navigation element with no design. All micro-apps will be able to access it any time since it is provided as a web component like micro-router. micro-link has one attribute which is href and if the given path is the current route, it assigns itself automatically active class. So no need to observe history and match correct path to put active class to the links.
+```html
+<micro-link href="/some/cool/page">
+    Some Cool Page
+</micro-link>
+```
+When we navigate to /some/cool/page this micro-link above will be marked as active. 
 ### Store
 With the assumption of only big teams and big code bases will need the microfe and nearly all of the already managing app state, the microfe library provides a global shared inter-app state. this state can be used as a shared event bus or shared global state. By nature, this store is reactive and powered by RxJS. Yet it still has the similar functionalities of Redux library.
 ```TypeScript
