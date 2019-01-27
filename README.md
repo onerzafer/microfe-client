@@ -59,6 +59,34 @@ const bootstrap = (
     config: ConfigInterface
 ) => (...microApps: MicroApp[]) => void
 ```
+To boostrap the microfe meta-framework the following example can be used as a refrence:
+```TypeScript
+import { Microfe, Bootstrap, Route, ConfigInterface } from './lib';
+
+@Microfe({
+    deps: ['LayoutApp'],
+})
+class Main {
+    constructor() {
+        console.log('Initialised');
+    }
+}
+
+const Routes: Route[] = [
+    { path: '/', redirectTo: '/angular' },
+    { path: '/angular', microApp: 'demoAngular', tagName: 'demo-angular' },
+    { path: '/react', microApp: 'reactDemo', tagName: 'react-demo' },
+    { path: '/static', microApp: 'staticApp', tagName: 'static-app' },
+    { path: '*', microApp: 'NotFoundApp', tagName: 'not-found-app' },
+];
+
+const Config: ConfigInterface = {
+    registryApi: 'http://localhost:3000/registry',
+    registryPublic: 'http://localhost:3000',
+};
+
+Bootstrap(Routes, Config)(Main);
+```
 
 ### AppsManager
 The main functionality of AppsManager is creating the dependency tree and when all of the dependencies of a micro-app are ready, it instantiates the micro-app by providing the dependencies instances. The public API for AppsManager can be summarized as follows:
@@ -133,6 +161,44 @@ const todosReducer = (state = [], action: Action) => {
 }
 MicroAppsStore.addReducer({todos: todoRecucer});
 // At this point Todos$.subscribe will receive [] as todos and will log []
+```
+### Microfe decorator
+This decorator can be used as an helper for casting any class to a micro-app
+```TypeScript
+@Microfe({
+    deps: ['LayoutApp']
+})
+export class Main {
+    private layoutApp;
+    constructor({LayoutApp}) {
+        this.layoutApp = LayoutApp;
+        this.render();
+    }
+
+    private render() {
+        this.layoutApp.someLayoutAppFunction();
+    }
+}
+```
+The code block above will be equavalent to following code:
+```javascript
+{
+    name: 'Main',
+    deps: ['LayoutApp']
+    initialize: function({LayoutApp}) {
+        LayoutApp.someLayoutAppFunction();
+    }
+}
+```
+### Provider
+The provider is a helper function to provide objects as micro-app. So any static data can be provided to other micro-apps with Provide function:
+```TypeScript
+const languageEn = {hello: 'Hello'};
+const languageEnProvider = provide(languageEn);
+```
+Then languageEnProvider can be passed down to all micro-apps which has the dependency as follows:
+```TypeScript
+Bootstrap(Routes, Config)(Main, LanguageEnProvider);
 ```
 # License
 [MIT](https://choosealicense.com/licenses/mit/)
