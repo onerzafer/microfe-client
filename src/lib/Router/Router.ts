@@ -2,14 +2,14 @@ import { ResolvedRoute, Route } from '../Interfaces/Router.interface';
 import { Microfe } from '../Decorators/Microfe.decorator';
 
 @Microfe({
-    deps: ['Routes']
+    deps: ['Routes'],
 })
 export class MicroAppRouter {
     private oldRoute: ResolvedRoute;
     private onChangeHandlers: Array<(oldPath: string, newPath: string) => void> = [];
     private routes: Array<Route>;
 
-    constructor({Routes}: {Routes: Array<Route>}) {
+    constructor({ Routes }: { Routes: Array<Route> }) {
         this.routes = Routes;
         window.onpopstate = () => {
             this.navigate(window.location.pathname);
@@ -19,7 +19,7 @@ export class MicroAppRouter {
     }
 
     navigate(path: string, isSilent: boolean = false) {
-        const resolvedRoute = this.resolve(this.cleanPath(path));
+        const resolvedRoute = this.resolve(MicroAppRouter.cleanPath(path));
         if (resolvedRoute) {
             if (!this.oldRoute || this.oldRoute.path !== resolvedRoute.path) {
                 if (!isSilent) {
@@ -28,7 +28,7 @@ export class MicroAppRouter {
                 this.changed(resolvedRoute);
             }
         } else {
-            window.location.href = this.cleanPath(path);
+            window.location.href = MicroAppRouter.cleanPath(path);
         }
     }
 
@@ -40,11 +40,7 @@ export class MicroAppRouter {
     }
 
     isActive(pathToCheck: string): boolean {
-        return this.oldRoute && this.isHit(this.oldRoute.route, this.cleanPath(pathToCheck));
-    }
-
-    private cleanPath(path: string): string {
-        return path.replace(new RegExp(window.location.origin), '');
+        return this.oldRoute && MicroAppRouter.isHit(this.oldRoute.route, MicroAppRouter.cleanPath(pathToCheck));
     }
 
     private changed(resolvedRoute: ResolvedRoute) {
@@ -58,7 +54,7 @@ export class MicroAppRouter {
     }
 
     private resolve(path: string): ResolvedRoute {
-        const foundRoute = this.routes.find(route => this.isHit(route, path));
+        const foundRoute = this.routes.find(route => MicroAppRouter.isHit(route, path));
         if (foundRoute && !foundRoute.redirectTo) {
             return {
                 path: path,
@@ -74,11 +70,15 @@ export class MicroAppRouter {
         }
     }
 
-    private isHit(route: Route, path: string): boolean {
-        return route.path === '/' ? route.path === path : this.pathToRegexp(route.path).test(path);
+    private static isHit(route: Route, path: string): boolean {
+        return route.path === '/' ? route.path === path : MicroAppRouter.pathToRegexp(route.path).test(path);
     }
 
-    private pathToRegexp(path: string): RegExp {
+    private static pathToRegexp(path: string): RegExp {
         return new RegExp(`^${path.replace(/\\\//g, '/').replace('*', '.*?')}`);
+    }
+
+    private static cleanPath(path: string): string {
+        return path && path.replace(new RegExp(window.location.origin), '');
     }
 }
